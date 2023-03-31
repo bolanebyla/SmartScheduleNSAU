@@ -11,7 +11,8 @@ class Logger:
 
 
 schedule_parser = parser.ScheduleParser(
-    schedule_url=Settings.schedule_parser.SCHEDULE_URL
+    schedule_url=Settings.schedule_parser.SCHEDULE_URL,
+    chunk_size_bytes=Settings.schedule_parser.CHUNK_SIZE_BYTES,
 )
 
 if __name__ == '__main__':

@@ -21,6 +21,7 @@ class ScheduleParser:
     Парсер расписания с сайта и excel файлов
     """
     schedule_url: str
+    chunk_size_bytes: int
 
     def __attrs_post_init__(self):
         self.logger = logging.getLogger(self.__class__.__name__)
@@ -38,7 +39,7 @@ class ScheduleParser:
 
     async def get_schedule_file_urls(self) -> List[models.ScheduleFileInfo]:
         """
-        Парсит страницу с расписанием
+        Получает ссылки на файлы с расписанием с сайта
         """
         self.logger.debug('Получение html страницы с расписанием...')
         site_content = await self.get_schedule_site_content()
@@ -83,21 +84,30 @@ class ScheduleParser:
     async def parse_schedule_from_file(
         self,
         schedule_file_info: models.ScheduleFileInfo,
-    ) -> Lesson:
+    ) -> List[Lesson]:
         self.logger.debug(schedule_file_info)
 
         file_url = schedule_file_info.schedule_file_url
 
+        lessons = []
+
         async with aiohttp.ClientSession() as session:
             async with session.get(file_url) as resp:
-
-                content = await resp.content.read()
-
                 schedule_file_name = f'{file_url[-5:-1]}_test.xls'
 
-                async with aiofiles.open(f'tmp/{schedule_file_name}',
-                                         'wb') as f:
-                    await f.write(content)
+                async with aiofiles.open(
+                        f'tmp/{schedule_file_name}',
+                        'wb',
+                ) as f:
+
+                    while True:
+                        chunk = await resp.content.read(10240)
+                        if not chunk:
+                            break
+                        await f.write(chunk)
+        self.logger.debug('"%s" downloaded', file_url)
+
+        return lessons
 
     async def parse_schedule_from_files(
         self, schedule_files: List[models.ScheduleFileInfo]
