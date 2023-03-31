@@ -28,7 +28,8 @@ class StudyGroup:
     Учебная группа
     """
     name: str
-    schedule_file_url: Optional[str]
+    schedule_file_url: str
+    course: int
 
 
 @attr.dataclass
@@ -52,4 +53,5 @@ class Lesson:
     week_parity: enums.WeekParities
     teacher: Teacher
     study_group: StudyGroup
+    subgroup: Optional[str]
     lesson_type: enums.LessonTypes

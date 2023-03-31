@@ -1,12 +1,12 @@
 from enum import Enum
 
 
-class WeekParities(Enum, str):
+class WeekParities(str, Enum):
     even = 'четная'
     odd = 'нечетная'
 
 
-class LessonTypes(Enum, str):
+class LessonTypes(str, Enum):
     lecture = 'лекция'
     practical = 'практика'
     laboratory = 'лабораторная'
