@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "smart-schedule-nsau"
+version = "0.1.0"
+description = "Chat bot with class schedule for Novosibirsk State Agrarian University (NSAU)"
+authors = ["Алексей Лесков <alexleskov2000@gmail.com>"]
+license = "MIT License"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
