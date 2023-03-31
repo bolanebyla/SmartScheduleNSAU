@@ -1,8 +1,7 @@
+import asyncio
 import logging
 
 import aiohttp
-import asyncio
-
 from bs4 import BeautifulSoup
 from classic.components import component
 
@@ -37,8 +36,7 @@ class ScheduleParser:
 
         self.logger.debug('Парсинг html страницы с расписанием...')
         faculties_groups = site_content.find_all(
-            'div',
-            class_='faculties_groups'
+            'div', class_='faculties_groups'
         )
 
         for faculty in faculties_groups:

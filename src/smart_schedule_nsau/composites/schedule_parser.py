@@ -1,4 +1,4 @@
-from smart_schedule_nsau.adapters import log,  settings, parser
+from smart_schedule_nsau.adapters import log, parser, settings
 
 
 class Settings:
@@ -16,6 +16,3 @@ schedule_parser = parser.ScheduleParser(
 
 if __name__ == '__main__':
     schedule_parser.run()
-
-
-
