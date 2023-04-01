@@ -187,6 +187,8 @@ class ScheduleParser:
                 if i == 0:
                     lesson_name = sh.row(rx)[1].value
                     print(lesson_name)
+                    teacher_full_name = sh.row(rx)[40].value
+                    print(teacher_full_name)
 
                 #  максимальное число пар одного предмета за неделю
                 max_week_lesson_sequence_number_count = 36
