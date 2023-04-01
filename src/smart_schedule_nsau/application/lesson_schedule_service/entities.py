@@ -55,3 +55,4 @@ class Lesson:
     study_group: StudyGroup
     subgroup: Optional[str]
     lesson_type: enums.LessonTypes
+    auditorium: str
