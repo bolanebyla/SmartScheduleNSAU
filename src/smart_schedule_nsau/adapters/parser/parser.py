@@ -1,9 +1,11 @@
 import asyncio
 import logging
-from typing import List
+import uuid
+from typing import Callable, List
 
 import aiofiles
 import aiohttp
+from aiohttp import ClientResponse
 from bs4 import BeautifulSoup
 from classic.components import component
 
@@ -22,6 +24,9 @@ class ScheduleParser:
     """
     schedule_url: str
     chunk_size_bytes: int
+    uuid_gen: Callable = uuid.uuid4
+
+    max_save_schedule_files_workers: int = 10
 
     def __attrs_post_init__(self):
         self.logger = logging.getLogger(self.__class__.__name__)
@@ -81,51 +86,84 @@ class ScheduleParser:
 
         return schedule_files
 
-    async def parse_schedule_from_file(
+    async def save_schedule_file(self, file_response: ClientResponse):
+        """
+        Сохраняет файл с расписанием на диск
+        """
+        original_filename = file_response.content_disposition.filename
+        schedule_file_name = f'{self.uuid_gen()}_{original_filename}'
+
+        schedule_file_path = f'tmp/{schedule_file_name}'
+
+        async with aiofiles.open(schedule_file_path, 'wb') as f:
+            while True:
+                chunk = await file_response.content.read(self.chunk_size_bytes)
+                if not chunk:
+                    break
+                await f.write(chunk)
+
+    async def download_schedule_file(
         self,
         schedule_file_info: models.ScheduleFileInfo,
-    ) -> List[Lesson]:
+        semaphore: asyncio.BoundedSemaphore,
+    ) -> models.ScheduleFileInfo:
+        """
+        Загружает файл с расписанием
+        """
+
         self.logger.debug(schedule_file_info)
 
         file_url = schedule_file_info.schedule_file_url
 
-        lessons = []
-
         async with aiohttp.ClientSession() as session:
+            # получаем файл
             async with session.get(file_url) as resp:
-                schedule_file_name = f'{file_url[-5:-1]}_test.xls'
+                async with semaphore:
+                    # сохраняем файл
+                    schedule_file_path = await self.save_schedule_file(
+                        file_response=resp,
+                    )
 
-                async with aiofiles.open(
-                        f'tmp/{schedule_file_name}',
-                        'wb',
-                ) as f:
+        schedule_file_info.schedule_file_path = schedule_file_path
 
-                    while True:
-                        chunk = await resp.content.read(10240)
-                        if not chunk:
-                            break
-                        await f.write(chunk)
         self.logger.debug('"%s" downloaded', file_url)
 
-        return lessons
+        return schedule_file_info
 
-    async def parse_schedule_from_files(
+    async def download_schedule_files(
         self, schedule_files: List[models.ScheduleFileInfo]
-    ):
+    ) -> List[models.ScheduleFileInfo]:
+
+        semaphore = asyncio.BoundedSemaphore(
+            self.max_save_schedule_files_workers
+        )
 
         parse_tasks = [
-            self.parse_schedule_from_file(file_info)
-            for file_info in schedule_files
+            asyncio.ensure_future(
+                self.download_schedule_file(file_info, semaphore)
+            ) for file_info in schedule_files
         ]
 
-        result = await asyncio.gather(*parse_tasks)
-        self.logger.debug(result)
+        downloaded_schedule_files = await asyncio.gather(*parse_tasks)
+
+        return downloaded_schedule_files
+
+    async def parse_schedule_file(
+        self, schedule_file: models.ScheduleFileInfo
+    ) -> List[Lesson]:
+        lessons = []
+
+        return lessons
 
     async def run_async(self):
         schedule_files = await self.get_schedule_file_urls()
         self.logger.debug('schedule_files_info %s', schedule_files)
 
-        await self.parse_schedule_from_files(schedule_files=schedule_files)
+        downloaded_schedule_files = await self.download_schedule_files(
+            schedule_files=schedule_files
+        )
+
+        self.logger.debug(downloaded_schedule_files)
 
     def run(self):
         loop = asyncio.get_event_loop()
