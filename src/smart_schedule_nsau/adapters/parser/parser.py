@@ -1,9 +1,11 @@
 import asyncio
 import logging
+import os
 import uuid
 from typing import Callable, List
 
 import aiofiles
+import aiofiles.os
 import aiohttp
 from aiohttp import ClientResponse
 from bs4 import BeautifulSoup
@@ -27,6 +29,7 @@ class ScheduleParser:
     uuid_gen: Callable = uuid.uuid4
 
     max_save_schedule_files_workers: int = 10
+    save_schedule_files_dir: str
 
     def __attrs_post_init__(self):
         self.logger = logging.getLogger(self.__class__.__name__)
@@ -93,7 +96,12 @@ class ScheduleParser:
         original_filename = file_response.content_disposition.filename
         schedule_file_name = f'{self.uuid_gen()}_{original_filename}'
 
-        schedule_file_path = f'tmp/{schedule_file_name}'
+        await aiofiles.os.makedirs(self.save_schedule_files_dir, exist_ok=True)
+
+        schedule_file_path = os.path.join(
+            self.save_schedule_files_dir,
+            schedule_file_name,
+        )
 
         async with aiofiles.open(schedule_file_path, 'wb') as f:
             while True:

@@ -15,6 +15,7 @@ schedule_parser = parser.ScheduleParser(
     chunk_size_bytes=Settings.schedule_parser.CHUNK_SIZE_BYTES,
     max_save_schedule_files_workers=Settings.schedule_parser.
     MAX_SAVE_SCHEDULE_FILES_WORKERS,
+    save_schedule_files_dir=Settings.schedule_parser.SAVE_SCHEDULE_FILES_DIR
 )
 
 if __name__ == '__main__':
