@@ -15,6 +15,9 @@ from classic.components import component
 from smart_schedule_nsau.application.lesson_schedule_service import (
     Faculty,
     Lesson,
+    LessonSequenceNumber,
+    StudyGroup,
+    Teacher,
 )
 
 from ...application.lesson_schedule_service.enums import WeekParities
@@ -235,6 +238,26 @@ class ScheduleParser:
                             auditorium, groups_row_names, week_parity.value,
                             lesson_sequence_number, week_day_number
                         )
+
+                        lesson = Lesson(
+                            name=lesson_name,
+                            week_day_number=week_day_number,
+                            sequence_number=LessonSequenceNumber(
+                                number=lesson_sequence_number,
+                            ),
+                            week_parity=week_parity,
+                            teacher=Teacher(full_name=teacher_full_name),
+                            study_group=StudyGroup(
+                                faculty=Faculty(name='test'),
+                                name=groups_row_names,
+                                schedule_file_url='test',
+                                course=0,
+                            ),
+                            subgroup='',
+                            lesson_type=None,
+                            auditorium=auditorium,
+                        )
+                        print(lesson)
 
                     lesson_sequence_number += 1
                     if lesson_sequence_number == 7:

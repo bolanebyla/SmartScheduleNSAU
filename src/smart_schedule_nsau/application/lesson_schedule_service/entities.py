@@ -1,4 +1,4 @@
-from datetime import time
+# from datetime import time
 from typing import Optional
 
 import attr
@@ -27,6 +27,7 @@ class StudyGroup:
     """
     Учебная группа
     """
+    faculty: Faculty
     name: str
     schedule_file_url: str
     course: int
@@ -38,8 +39,8 @@ class LessonSequenceNumber:
     Порядковый номер занятия (пары)
     """
     number: int
-    start_time: time
-    end_time: time
+    # start_time: time
+    # end_time: time
 
 
 @attr.dataclass
