@@ -1,2 +1,2 @@
-from .entities import Faculty, Lesson, LessonSequenceNumber, StudyGroup
+from .entities import Faculty, Lesson, LessonSequence, StudyGroup
 from .enums import WeekParities

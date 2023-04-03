@@ -1,4 +1,4 @@
-"""Create `faculties` table
+"""Create table `faculties`
 
 Revision ID: 62a4de750b52
 Revises:

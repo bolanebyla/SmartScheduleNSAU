@@ -1,5 +1,6 @@
 # from datetime import time
-from typing import Optional
+from datetime import time
+from typing import List, Optional
 
 import attr
 
@@ -7,33 +8,13 @@ from . import enums
 
 
 @attr.dataclass
-class Faculty:
-    """
-    Факультет
-    """
-    id: str
-    name: str
-
-
-@attr.dataclass
-class StudyGroup:
-    """
-    Учебная группа
-    """
-    faculty: Faculty
-    name: str
-    schedule_file_url: str
-    course: int
-
-
-@attr.dataclass
-class LessonSequenceNumber:
+class LessonSequence:
     """
     Порядковый номер занятия (пары)
     """
     number: int
-    # start_time: time
-    # end_time: time
+    start_time: time
+    end_time: time
 
 
 @attr.dataclass
@@ -43,10 +24,30 @@ class Lesson:
     """
     name: str
     week_day_number: int
-    sequence_number: LessonSequenceNumber
+    sequence: LessonSequence
     week_parity: enums.WeekParities
     teacher_full_name: str
-    study_group: StudyGroup
     subgroup: Optional[str]
     lesson_type: enums.LessonTypes
     auditorium: str
+
+
+@attr.dataclass
+class StudyGroup:
+    """
+    Учебная группа
+    """
+    name: str
+    schedule_file_url: str
+    course: int
+    lessons: List[Lesson] = attr.ib(factory=list)
+
+
+@attr.dataclass
+class Faculty:
+    """
+    Факультет
+    """
+    id: str
+    name: str
+    study_groups: List[StudyGroup] = attr.ib(factory=list)

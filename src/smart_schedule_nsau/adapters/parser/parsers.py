@@ -15,7 +15,7 @@ from classic.components import component
 from smart_schedule_nsau.application.lesson_schedule_service import (
     Faculty,
     Lesson,
-    LessonSequenceNumber,
+    LessonSequence,
     StudyGroup,
     WeekParities,
 )
@@ -109,7 +109,7 @@ class ScheduleFileParser:
                         lesson = Lesson(
                             name=lesson_name,
                             week_day_number=week_day_number,
-                            sequence_number=LessonSequenceNumber(
+                            sequence_number=LessonSequence(
                                 number=lesson_sequence_number,
                             ),
                             week_parity=week_parity,
