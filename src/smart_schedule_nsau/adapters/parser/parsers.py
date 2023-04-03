@@ -17,7 +17,6 @@ from smart_schedule_nsau.application.lesson_schedule_service import (
     Lesson,
     LessonSequenceNumber,
     StudyGroup,
-    Teacher,
     WeekParities,
 )
 
@@ -114,7 +113,7 @@ class ScheduleFileParser:
                                 number=lesson_sequence_number,
                             ),
                             week_parity=week_parity,
-                            teacher=Teacher(full_name=teacher_full_name),
+                            teacher_full_name=teacher_full_name,
                             study_group=StudyGroup(
                                 faculty=Faculty(id='test', name='test'),
                                 name=groups_row_names,

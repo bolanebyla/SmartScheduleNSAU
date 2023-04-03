@@ -7,14 +7,6 @@ from . import enums
 
 
 @attr.dataclass
-class Teacher:
-    """
-    Преподаватель
-    """
-    full_name: str
-
-
-@attr.dataclass
 class Faculty:
     """
     Факультет
@@ -53,7 +45,7 @@ class Lesson:
     week_day_number: int
     sequence_number: LessonSequenceNumber
     week_parity: enums.WeekParities
-    teacher: Teacher
+    teacher_full_name: str
     study_group: StudyGroup
     subgroup: Optional[str]
     lesson_type: enums.LessonTypes
