@@ -1,7 +1,8 @@
-from .parser import ScheduleParser
+from .parsers import ScheduleFileParser, ScheduleSiteParser
 from .settings import Settings
 
 __all__ = (
-    'ScheduleParser',
+    'ScheduleSiteParser',
+    'ScheduleFileParser',
     'Settings',
 )

@@ -19,6 +19,7 @@ class Faculty:
     """
     Факультет
     """
+    id: str
     name: str
 
 

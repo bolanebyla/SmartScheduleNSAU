@@ -18,20 +18,138 @@ from smart_schedule_nsau.application.lesson_schedule_service import (
     LessonSequenceNumber,
     StudyGroup,
     Teacher,
+    WeekParities,
 )
 
-from ...application.lesson_schedule_service.enums import WeekParities
 from . import models
 
 
 @component
-class ScheduleParser:
+class ScheduleFileParser:
+
+    def __attrs_post_init__(self):
+        self.logger = logging.getLogger(self.__class__.__name__)
+
+    def parse_schedule_file(
+        self, schedule_file: models.ScheduleFileInfo = None
+    ) -> List[Lesson]:
+        # if schedule_file.schedule_file_path is None:
+        #     raise ValueError(
+        #         'Field `schedule_file_path` is empty. '
+        #         'Can not parse schedule from file'
+        #     )
+
+        lessons = []
+        # schedule_file_path = schedule_file.schedule_file_path
+        schedule_file_path = (
+            'tmp/schedule_files\\'
+            '56b5c973-531d-400a-ad5a-fb9a5e400118_ФВМ 1 курс.xls'
+        )
+        wb = xlrd.open_workbook(schedule_file_path)
+
+        for sheet_name in wb.sheet_names():
+            sh = wb.sheet_by_name(sheet_name)
+            self.logger.debug(sh)
+            schedule_rows = range(5, sh.nrows, 2)
+
+            i = 0
+            for rx in schedule_rows:
+
+                if i == 0:
+                    lesson_name = sh.row(rx)[1].value
+                    print(lesson_name)
+                    teacher_full_name = sh.row(rx)[40].value
+                    print(teacher_full_name)
+
+                #  максимальное число пар одного предмета за неделю
+                max_week_lesson_sequence_number_count = 36
+
+                lesson_sequence_number = 1
+                for lessons_col_y in range(
+                        4, max_week_lesson_sequence_number_count):
+                    # получение аудитории
+                    auditorium = str(sh.cell(rx, lessons_col_y).value).strip()
+
+                    # получение сырых данных о группах у которых пара
+                    groups_names_cell = sh.cell(rx + 1, lessons_col_y)
+                    # если указано просто число
+                    if groups_names_cell.ctype == xlrd.XL_CELL_NUMBER:
+                        # то переводим в строку
+                        groups_row_names = str(int(groups_names_cell.value))
+                    else:
+                        groups_row_names = str(groups_names_cell.value).strip()
+
+                    # определение четности недели
+                    if i == 0:
+                        week_parity = WeekParities.odd
+                    else:
+                        week_parity = WeekParities.even
+
+                    # определение дня недели
+                    if lessons_col_y in list(range(4, 10)):
+                        week_day_number = 1
+                    elif lessons_col_y in list(range(10, 16)):
+                        week_day_number = 2
+                    elif lessons_col_y in list(range(16, 22)):
+                        week_day_number = 3
+                    elif lessons_col_y in list(range(22, 28)):
+                        week_day_number = 4
+                    elif lessons_col_y in list(range(28, 34)):
+                        week_day_number = 5
+                    elif lessons_col_y in list(range(34, 40)):
+                        week_day_number = 6
+                    else:
+                        raise ValueError('Cant get `week_day_number`')
+
+                    if groups_row_names:
+                        print(
+                            auditorium, groups_row_names, week_parity.value,
+                            lesson_sequence_number, week_day_number
+                        )
+
+                        lesson = Lesson(
+                            name=lesson_name,
+                            week_day_number=week_day_number,
+                            sequence_number=LessonSequenceNumber(
+                                number=lesson_sequence_number,
+                            ),
+                            week_parity=week_parity,
+                            teacher=Teacher(full_name=teacher_full_name),
+                            study_group=StudyGroup(
+                                faculty=Faculty(id='test', name='test'),
+                                name=groups_row_names,
+                                schedule_file_url='test',
+                                course=0,
+                            ),
+                            subgroup='',
+                            lesson_type=None,
+                            auditorium=auditorium,
+                        )
+                        print(lesson)
+
+                    lesson_sequence_number += 1
+                    if lesson_sequence_number == 7:
+                        lesson_sequence_number = 1
+
+                i += 1
+                if i == 2:
+                    i = 0
+
+            break
+
+        return lessons
+
+
+@component
+class ScheduleSiteParser:
     """
     Парсер расписания с сайта и excel файлов
     """
     schedule_url: str
     chunk_size_bytes: int
     uuid_gen: Callable = uuid.uuid4
+
+    schedule_file_parser: ScheduleFileParser
 
     max_save_schedule_files_workers: int = 10
     save_schedule_files_dir: str
@@ -162,115 +280,6 @@ class ScheduleParser:
 
         return downloaded_schedule_files
 
-    def parse_schedule_file(
-        self, schedule_file: models.ScheduleFileInfo = None
-    ) -> List[Lesson]:
-        # if schedule_file.schedule_file_path is None:
-        #     raise ValueError(
-        #         'Field `schedule_file_path` is empty. '
-        #         'Can not parse schedule from file'
-        #     )
-
-        lessons = []
-        # schedule_file_path = schedule_file.schedule_file_path
-        schedule_file_path = (
-            'tmp/schedule_files\\'
-            '56b5c973-531d-400a-ad5a-fb9a5e400118_ФВМ 1 курс.xls'
-        )
-        wb = xlrd.open_workbook(schedule_file_path)
-
-        for sheet_name in wb.sheet_names():
-            sh = wb.sheet_by_name(sheet_name)
-            self.logger.debug(sh)
-            schedule_rows = range(5, sh.nrows, 2)
-
-            i = 0
-            for rx in schedule_rows:
-
-                if i == 0:
-                    lesson_name = sh.row(rx)[1].value
-                    print(lesson_name)
-                    teacher_full_name = sh.row(rx)[40].value
-                    print(teacher_full_name)
-
-                #  максимальное число пар одного предмета за неделю
-                max_week_lesson_sequence_number_count = 36
-
-                lesson_sequence_number = 1
-                for lessons_col_y in range(
-                        4, max_week_lesson_sequence_number_count):
-                    # получение аудитории
-                    auditorium = str(sh.cell(rx, lessons_col_y).value).strip()
-
-                    # получение сырых данных о группах у которых пара
-                    groups_names_cell = sh.cell(rx + 1, lessons_col_y)
-                    # если указано просто число
-                    if groups_names_cell.ctype == xlrd.XL_CELL_NUMBER:
-                        # то переводим в строку
-                        groups_row_names = str(int(groups_names_cell.value))
-                    else:
-                        groups_row_names = str(groups_names_cell.value).strip()
-
-                    # определение четности недели
-                    if i == 0:
-                        week_parity = WeekParities.odd
-                    else:
-                        week_parity = WeekParities.even
-
-                    # определение дня недели
-                    if lessons_col_y in list(range(4, 10)):
-                        week_day_number = 1
-                    elif lessons_col_y in list(range(10, 16)):
-                        week_day_number = 2
-                    elif lessons_col_y in list(range(16, 22)):
-                        week_day_number = 3
-                    elif lessons_col_y in list(range(22, 28)):
-                        week_day_number = 4
-                    elif lessons_col_y in list(range(28, 34)):
-                        week_day_number = 5
-                    elif lessons_col_y in list(range(34, 40)):
-                        week_day_number = 6
-                    else:
-                        raise ValueError('Cant get `week_day_number`')
-
-                    if groups_row_names:
-                        print(
-                            auditorium, groups_row_names, week_parity.value,
-                            lesson_sequence_number, week_day_number
-                        )
-
-                        lesson = Lesson(
-                            name=lesson_name,
-                            week_day_number=week_day_number,
-                            sequence_number=LessonSequenceNumber(
-                                number=lesson_sequence_number,
-                            ),
-                            week_parity=week_parity,
-                            teacher=Teacher(full_name=teacher_full_name),
-                            study_group=StudyGroup(
-                                faculty=Faculty(name='test'),
-                                name=groups_row_names,
-                                schedule_file_url='test',
-                                course=0,
-                            ),
-                            subgroup='',
-                            lesson_type=None,
-                            auditorium=auditorium,
-                        )
-                        print(lesson)
-
-                    lesson_sequence_number += 1
-                    if lesson_sequence_number == 7:
-                        lesson_sequence_number = 1
-
-                i += 1
-                if i == 2:
-                    i = 0
-
-            break
-
-        return lessons
-
     async def run_async(self):
         # schedule_files = await self.get_schedule_file_urls()
         # downloaded_schedule_files = await self.download_schedule_files(
@@ -284,7 +293,7 @@ class ScheduleParser:
 
         # for schedule_file in downloaded_schedule_files:
         # schedule_file=schedule_file,
-        await asyncio.to_thread(self.parse_schedule_file, )
+        await asyncio.to_thread(self.schedule_file_parser.parse_schedule_file, )
 
         # self.logger.debug(downloaded_schedule_files)
 
