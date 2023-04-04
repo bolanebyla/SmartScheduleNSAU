@@ -1,8 +1,8 @@
 """Create table `lessons`
 
-Revision ID: 8427b7ee8e1b
+Revision ID: 6e6ef1215ead
 Revises: 28473bcc303b
-Create Date: 2023-04-04 03:20:13.692672+00:00
+Create Date: 2023-04-04 04:10:54.447182+00:00
 
 """
 import sqlalchemy as sa
@@ -14,7 +14,7 @@ from smart_schedule_nsau.adapters.database.tables import (
 )
 
 # revision identifiers, used by Alembic.
-revision = '8427b7ee8e1b'
+revision = '6e6ef1215ead'
 down_revision = '28473bcc303b'
 branch_labels = None
 depends_on = None
@@ -44,6 +44,15 @@ def upgrade():
             ['study_group_name'], ['study_groups.name'],
             name=op.f('fk_lessons_study_group_name_study_groups'),
             ondelete='CASCADE'
+        ),
+        sa.PrimaryKeyConstraint(
+            'name',
+            'week_day_number',
+            'week_parity',
+            'teacher_full_name',
+            'lesson_type',
+            'auditorium',
+            name=op.f('pk_lessons')
         )
     )
     # ### end Alembic commands ###

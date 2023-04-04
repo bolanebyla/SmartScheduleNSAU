@@ -74,17 +74,17 @@ LESSON_TYPES_ENUM = ENUM(
 lessons = Table(
     'lessons',
     metadata,
-    Column('name', String, nullable=False),
-    Column('week_day_number', Integer, nullable=False),
+    Column('name', String, primary_key=True),
+    Column('week_day_number', Integer, primary_key=True),
     Column(
         'sequence_number',
         ForeignKey('lesson_sequences.number', ondelete=CASCADE),
         nullable=False
     ),
-    Column('week_parity', WEEK_PARITIES_ENUM, nullable=False),
-    Column('teacher_full_name', String, nullable=False),
-    Column('lesson_type', LESSON_TYPES_ENUM, nullable=False),
-    Column('auditorium', String, nullable=False),
+    Column('week_parity', WEEK_PARITIES_ENUM, primary_key=True),
+    Column('teacher_full_name', String, primary_key=True),
+    Column('lesson_type', LESSON_TYPES_ENUM, primary_key=True),
+    Column('auditorium', String, primary_key=True),
     Column(
         'study_group_name',
         ForeignKey('study_groups.name', ondelete=CASCADE),
