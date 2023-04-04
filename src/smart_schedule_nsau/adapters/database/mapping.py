@@ -6,6 +6,6 @@ from . import tables
 
 mapper = registry()
 
-mapper.map_imperatively(entities.LessonSequence, tables.lesson_sequences)
-
 mapper.map_imperatively(entities.Faculty, tables.faculties)
+
+mapper.map_imperatively(entities.LessonSequence, tables.lesson_sequences)

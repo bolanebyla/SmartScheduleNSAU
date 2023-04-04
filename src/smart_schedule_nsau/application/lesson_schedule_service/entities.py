@@ -27,9 +27,9 @@ class Lesson:
     sequence: LessonSequence
     week_parity: enums.WeekParities
     teacher_full_name: str
-    subgroup: Optional[str]
     lesson_type: enums.LessonTypes
     auditorium: str
+    subgroup: Optional[str] = None
 
 
 @attr.dataclass

@@ -1,4 +1,19 @@
-from sqlalchemy import Column, DateTime, Integer, MetaData, String, Table
+from sqlalchemy import (
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    MetaData,
+    String,
+    Table,
+)
+
+# from sqlalchemy.dialects.postgresql import ENUM
+#
+# from smart_schedule_nsau.application.lesson_schedule_service import (
+#     WeekParities,
+#     LessonTypes,
+# )
 
 naming_convention = {
     'ix': 'ix_%(column_0_label)s',
@@ -12,14 +27,6 @@ CASCADE = 'CASCADE'
 
 metadata = MetaData(naming_convention=naming_convention)
 
-lesson_sequences = Table(
-    'lesson_sequences',
-    metadata,
-    Column('number', Integer, primary_key=True),
-    Column('start_time', DateTime, nullable=False),
-    Column('end_time', DateTime, nullable=False),
-)
-
 # TODO: name - nullable=False
 faculties = Table(
     'faculties',
@@ -28,12 +35,61 @@ faculties = Table(
     Column('name', String, nullable=True),
 )
 
-# study_groups = Table(
-#     'study_groups',
+study_groups = Table(
+    'study_groups',
+    metadata,
+    Column('name', String, primary_key=True),
+    Column(
+        'faculty_id',
+        ForeignKey('faculties.id', ondelete=CASCADE),
+        nullable=False
+    ),
+    Column('schedule_file_url', String, nullable=False),
+    Column('course', Integer, nullable=False),
+)
+
+lesson_sequences = Table(
+    'lesson_sequences',
+    metadata,
+    Column('number', Integer, primary_key=True),
+    Column('start_time', DateTime, nullable=False),
+    Column('end_time', DateTime, nullable=False),
+)
+#
+# WEEK_PARITIES_ENUM = ENUM(
+#     WeekParities,
+#     name='week_parities',
+#     metadata=metadata,
+#     create_type=False,
+#     validate_strings=True,
+# )
+#
+# LESSON_TYPES_ENUM = ENUM(
+#     LessonTypes,
+#     name='lesson_types',
+#     metadata=metadata,
+#     create_type=False,
+#     validate_strings=True,
+# )
+#
+# lessons = Table(
+#     'lessons',
 #     metadata,
-#     Column('name', String, primary_key=True),
-#     Column('faculty_id', ForeignKey('faculties.id', ondelete=CASCADE),
-#     nullable=False),
-#     Column('schedule_file_url', String, nullable=False),
-#     Column('course', Integer, nullable=False),
+#     Column('name', String, nullable=False),
+#     Column('week_day_number', Integer, nullable=False),
+#     Column(
+#         'sequence_id',
+#         ForeignKey('lesson_sequences.id', ondelete=CASCADE),
+#         nullable=False
+#     ),
+#     Column('week_parity', WEEK_PARITIES_ENUM, nullable=False),
+#     Column('teacher_full_name', String, nullable=False),
+#     Column('lesson_type', LESSON_TYPES_ENUM, nullable=False),
+#     Column('auditorium', String, nullable=False),
+#     Column(
+#         'study_group_name',
+#         ForeignKey('study_groups.name', ondelete=CASCADE),
+#         nullable=False
+#     ),
+#     Column('subgroup', String, nullable=True),
 # )
