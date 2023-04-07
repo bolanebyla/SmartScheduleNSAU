@@ -34,7 +34,7 @@ class Settings(BaseSettings):
 
     @property
     def DATABASE_URL(self):
-        url = 'postgresql://{user}:{password}@{host}:{port}/{name}'
+        url = 'postgresql+asyncpg://{user}:{password}@{host}:{port}/{name}'
         return url.format(
             user=self.DATABASE_USER,
             password=self.DATABASE_PASS,

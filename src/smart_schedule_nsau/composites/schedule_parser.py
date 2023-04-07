@@ -1,13 +1,30 @@
-from smart_schedule_nsau.adapters import log, parser, settings
+import asyncio
+
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+
+from smart_schedule_nsau.adapters import database, log, parser, settings
 
 
 class Settings:
+    db = database.Settings()
     common_settings = settings.Settings()
     schedule_parser = parser.Settings()
 
 
 class Logger:
     log.configure()
+
+
+class DB:
+    engine = create_async_engine(Settings.db.DATABASE_URL, echo=True)
+
+    context = database.TransactionContextAsync(
+        bind=engine,
+        class_=AsyncSession,
+        expire_on_commit=False,
+    )
+
+    schedule_parser_repo = database.ScheduleParserRepo(context=context, )
 
 
 class Parsers:
@@ -23,5 +40,14 @@ schedule_parser = parser.ScheduleSiteParser(
     schedule_file_parser=Parsers.schedule_file_parser,
 )
 
+
+@DB.context
+async def demo():
+    await DB.schedule_parser_repo.recreate_schedule()
+
+
 if __name__ == '__main__':
-    schedule_parser.run()
+    # schedule_parser.run()
+
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(demo())
