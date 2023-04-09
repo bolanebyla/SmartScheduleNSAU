@@ -1,18 +1,10 @@
-import asyncio
-
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 from smart_schedule_nsau.adapters import database, log, parser, settings
-from smart_schedule_nsau.adapters.database.uow import (
-    UnitOfWork,
-    UnitOfWorkFactory,
-)
+from smart_schedule_nsau.adapters.database.uow import UnitOfWorkFactory
 from smart_schedule_nsau.application.lesson_schedule_service import (
     ScheduleCreator,
-)
-from smart_schedule_nsau.application.lesson_schedule_service.interfaces import (
-    IUnitOfWork,
 )
 
 
@@ -59,28 +51,5 @@ schedule_parser = parser.ScheduleSiteParser(
     schedule_creator=Application.schedule_creator,
 )
 
-
-async def demo_1(uow: IUnitOfWork):
-    async with uow:
-        await uow.schedule_change_repo.create_schedule()
-        await uow.commit()
-
-
-async def demo_2(uow: IUnitOfWork):
-    async with uow:
-        await uow.schedule_change_repo.create_schedule()
-        await uow.commit()
-
-
-async def main():
-    await asyncio.gather(
-        demo_1(uow=UnitOfWork(session_factory=DB.session_factory)),
-        demo_2(uow=UnitOfWork(session_factory=DB.session_factory))
-    )
-
-
 if __name__ == '__main__':
     schedule_parser.run()
-
-    # loop = asyncio.get_event_loop()
-    # loop.run_until_complete(main())
