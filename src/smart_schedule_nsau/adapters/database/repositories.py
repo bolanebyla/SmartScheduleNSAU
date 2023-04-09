@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from smart_schedule_nsau.application.lesson_schedule_service import (
     Faculty,
-    IScheduleParserRepo,
+    IScheduleChangeRepo,
 )
 
 
@@ -16,11 +16,13 @@ class BaseRepositoryAsync:
 
 
 @component
-class ScheduleParserRepo(BaseRepositoryAsync, IScheduleParserRepo):
+class ScheduleChangeRepo(BaseRepositoryAsync, IScheduleChangeRepo):
 
-    async def recreate_schedule(self,
-                                faculties: List[Faculty] = None
-                                ) -> List[Faculty]:
+    async def delete_schedule(self):
+        pass
+
+    async def create_schedule(self,
+                              faculties: List[Faculty] = None) -> List[Faculty]:
         query = select(Faculty).where(Faculty.id == '1')
         res = await self.session.execute(query)
         print(res.scalars().one_or_none())

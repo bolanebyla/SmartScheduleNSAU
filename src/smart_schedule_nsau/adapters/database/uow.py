@@ -15,7 +15,7 @@ class UnitOfWork(IUnitOfWork):
 
     async def __aenter__(self):
         self.session: AsyncSession = self.session_factory()
-        self.schedule_parser_repo = repositories.ScheduleParserRepo(
+        self.schedule_change_repo = repositories.ScheduleChangeRepo(
             session=self.session
         )
         return await super().__aenter__()
@@ -29,3 +29,12 @@ class UnitOfWork(IUnitOfWork):
 
     async def rollback(self):
         await self.session.rollback()
+
+
+@component
+class UnitOfWorkFactory:
+    session_factory: sessionmaker
+
+    def create_uow(self) -> UnitOfWork:
+        uow = UnitOfWork(session_factory=self.session_factory, )
+        return uow

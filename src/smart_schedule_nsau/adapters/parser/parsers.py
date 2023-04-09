@@ -16,10 +16,12 @@ from smart_schedule_nsau.application.lesson_schedule_service import (
     Faculty,
     Lesson,
     LessonSequence,
+    ScheduleCreator,
     StudyGroup,
     WeekParities,
 )
 
+from ..database.uow import UnitOfWorkFactory
 from . import models
 
 
@@ -152,6 +154,10 @@ class ScheduleSiteParser:
 
     max_save_schedule_files_workers: int = 10
     save_schedule_files_dir: str
+
+    uow_factory: UnitOfWorkFactory
+
+    schedule_creator: ScheduleCreator
 
     def __attrs_post_init__(self):
         self.logger = logging.getLogger(self.__class__.__name__)
@@ -292,7 +298,15 @@ class ScheduleSiteParser:
 
         # for schedule_file in downloaded_schedule_files:
         # schedule_file=schedule_file,
-        await asyncio.to_thread(self.schedule_file_parser.parse_schedule_file, )
+        # faculties = await asyncio.to_thread(
+        #     self.schedule_file_parser.parse_schedule_file,
+        # )
+
+        faculties = None
+        await self.schedule_creator.recreate_schedule(
+            uow=self.uow_factory.create_uow(),
+            faculties=faculties,
+        )
 
         # self.logger.debug(downloaded_schedule_files)
 

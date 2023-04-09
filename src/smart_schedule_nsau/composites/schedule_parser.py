@@ -4,7 +4,13 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 from smart_schedule_nsau.adapters import database, log, parser, settings
-from smart_schedule_nsau.adapters.database.uow import UnitOfWork
+from smart_schedule_nsau.adapters.database.uow import (
+    UnitOfWork,
+    UnitOfWorkFactory,
+)
+from smart_schedule_nsau.application.lesson_schedule_service import (
+    ScheduleCreator,
+)
 from smart_schedule_nsau.application.lesson_schedule_service.interfaces import (
     IUnitOfWork,
 )
@@ -30,6 +36,14 @@ class DB:
     )
 
 
+class UoW:
+    uow_factory = UnitOfWorkFactory(session_factory=DB.session_factory, )
+
+
+class Application:
+    schedule_creator = ScheduleCreator()
+
+
 class Parsers:
     schedule_file_parser = parser.ScheduleFileParser()
 
@@ -41,18 +55,20 @@ schedule_parser = parser.ScheduleSiteParser(
     MAX_SAVE_SCHEDULE_FILES_WORKERS,
     save_schedule_files_dir=Settings.schedule_parser.SAVE_SCHEDULE_FILES_DIR,
     schedule_file_parser=Parsers.schedule_file_parser,
+    uow_factory=UoW.uow_factory,
+    schedule_creator=Application.schedule_creator,
 )
 
 
 async def demo_1(uow: IUnitOfWork):
     async with uow:
-        await uow.schedule_parser_repo.recreate_schedule()
+        await uow.schedule_change_repo.create_schedule()
         await uow.commit()
 
 
 async def demo_2(uow: IUnitOfWork):
     async with uow:
-        await uow.schedule_parser_repo.recreate_schedule()
+        await uow.schedule_change_repo.create_schedule()
         await uow.commit()
 
 
@@ -64,7 +80,7 @@ async def main():
 
 
 if __name__ == '__main__':
-    # schedule_parser.run()
+    schedule_parser.run()
 
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    # loop = asyncio.get_event_loop()
+    # loop.run_until_complete(main())

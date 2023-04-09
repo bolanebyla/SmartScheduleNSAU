@@ -6,17 +6,20 @@ from typing import List
 from smart_schedule_nsau.application.lesson_schedule_service import Faculty
 
 
-class IScheduleParserRepo(ABC):
+class IScheduleChangeRepo(ABC):
 
     @abstractmethod
-    async def recreate_schedule(self,
-                                faculties: List[Faculty] = None
-                                ) -> List[Faculty]:
+    async def delete_schedule(self):
+        ...
+
+    @abstractmethod
+    async def create_schedule(self,
+                              faculties: List[Faculty] = None) -> List[Faculty]:
         ...
 
 
 class IUnitOfWork(ABC):
-    schedule_parser_repo: IScheduleParserRepo
+    schedule_change_repo: IScheduleChangeRepo
 
     async def __aenter__(self) -> IUnitOfWork:
         return self
