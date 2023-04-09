@@ -21,8 +21,7 @@ class ScheduleChangeRepo(BaseRepositoryAsync, IScheduleChangeRepo):
     async def delete_schedule(self):
         pass
 
-    async def create_schedule(self,
-                              faculties: List[Faculty] = None) -> List[Faculty]:
+    async def create_schedule(self, faculties: List[Faculty]) -> List[Faculty]:
         query = select(Faculty).where(Faculty.id == '1')
         res = await self.session.execute(query)
         print(res.scalars().one_or_none())

@@ -13,8 +13,7 @@ class IScheduleChangeRepo(ABC):
         ...
 
     @abstractmethod
-    async def create_schedule(self,
-                              faculties: List[Faculty] = None) -> List[Faculty]:
+    async def create_schedule(self, faculties: List[Faculty]) -> List[Faculty]:
         ...
 
 

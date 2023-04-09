@@ -302,7 +302,11 @@ class ScheduleSiteParser:
         #     self.schedule_file_parser.parse_schedule_file,
         # )
 
-        faculties = None
+        faculties = [Faculty(
+            id='test',
+            name='test',
+            study_groups=[],
+        )]
         await self.schedule_creator.recreate_schedule(
             uow=self.uow_factory.create_uow(),
             faculties=faculties,

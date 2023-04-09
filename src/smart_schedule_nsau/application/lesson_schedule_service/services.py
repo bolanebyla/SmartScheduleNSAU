@@ -11,7 +11,7 @@ class ScheduleCreator:
     async def recreate_schedule(
         self,
         uow: interfaces.IUnitOfWork,
-        faculties: List[entities.Faculty] = None
+        faculties: List[entities.Faculty],
     ):
         async with uow:
             await uow.schedule_change_repo.delete_schedule()
