@@ -9,19 +9,10 @@ from smart_schedule_nsau.application.lesson_schedule_service import (
     IScheduleParserRepo,
 )
 
-from .transactions import TransactionContextAsync
-
 
 @component
 class BaseRepositoryAsync:
-    """
-    Base class for Repositories, using async SQLAlchemy
-    """
-    context: TransactionContextAsync
-
-    @property
-    def session(self) -> AsyncSession:
-        return self.context.current_session
+    session: AsyncSession
 
 
 @component
