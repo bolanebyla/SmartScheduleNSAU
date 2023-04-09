@@ -1,7 +1,7 @@
 from typing import List
 
 from classic.components import component
-from sqlalchemy import select
+from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from smart_schedule_nsau.application.lesson_schedule_service import (
@@ -19,11 +19,8 @@ class BaseRepositoryAsync:
 class ScheduleChangeRepo(BaseRepositoryAsync, IScheduleChangeRepo):
 
     async def delete_schedule(self):
-        pass
+        query = delete(Faculty)
+        await self.session.execute(query)
 
-    async def create_schedule(self, faculties: List[Faculty]) -> List[Faculty]:
-        query = select(Faculty).where(Faculty.id == '1')
-        res = await self.session.execute(query)
-        print(res.scalars().one_or_none())
-
-        return faculties
+    def create_schedule(self, faculties: List[Faculty]):
+        self.session.add_all(faculties)

@@ -15,6 +15,6 @@ class ScheduleCreator:
     ):
         async with uow:
             await uow.schedule_change_repo.delete_schedule()
-            await uow.schedule_change_repo.create_schedule(faculties=faculties)
+            uow.schedule_change_repo.create_schedule(faculties=faculties)
 
             await uow.commit()
