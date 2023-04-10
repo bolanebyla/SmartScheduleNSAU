@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 import attr
 
@@ -9,6 +9,11 @@ from smart_schedule_nsau.application.lesson_schedule_service import Faculty
 class ScheduleFileInfo:
     course: int
     schedule_file_url: str
-    faculty: Faculty
 
     schedule_file_path: Optional[str] = None
+
+
+@attr.dataclass
+class ParsedData:
+    faculty: Faculty
+    schedule_files: List[ScheduleFileInfo] = attr.ib(factory=list)

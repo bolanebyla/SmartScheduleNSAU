@@ -2,7 +2,8 @@ import asyncio
 import logging
 import os
 import uuid
-from typing import Callable, List
+from datetime import datetime
+from typing import Callable, Dict, List
 
 import aiofiles
 import aiofiles.os
@@ -31,6 +32,62 @@ class ScheduleFileParser:
     def __attrs_post_init__(self):
         self.logger = logging.getLogger(self.__class__.__name__)
 
+    def _create_group_name(self, group_prefix: str, group_number: int):
+        """
+        Создает название группы по префиксу и номеру
+        """
+        if len(str(group_number)) == 1:
+            group_number = f'0{group_number}'
+
+        group_name = f'{group_prefix}{group_number}'
+
+        return group_name
+
+    def _greate_groups(
+        self, sheet_name: str, schedule_file: models.ScheduleFileInfo
+    ) -> Dict[int, StudyGroup]:
+        """
+        Создает группы из названия листа
+        """
+
+        group_prefix = sheet_name[:2]
+        groups_range_info = sheet_name[2:]
+
+        # словарь с группами, чтобы распределять пары по группам
+        groups_by_numbers: Dict[int, StudyGroup] = {}
+
+        # если в названии есть "-", значит указан диапазон групп
+        if '-' in groups_range_info:
+            start_group_number, end_group_number = groups_range_info.split('-')
+
+            for group_number in range(int(start_group_number),
+                                      int(end_group_number) + 1):
+                group_name = self._create_group_name(
+                    group_prefix=group_prefix,
+                    group_number=group_number,
+                )
+
+                groups_by_numbers[group_number] = StudyGroup(
+                    name=group_name,
+                    schedule_file_url=schedule_file.schedule_file_url,
+                    course=schedule_file.course,
+                )
+
+        # если нет, то лист для одной группы
+        else:
+            group_number = int(groups_range_info)
+            group_name = self._create_group_name(
+                group_prefix=group_prefix,
+                group_number=group_number,
+            )
+            groups_by_numbers[group_number] = StudyGroup(
+                name=group_name,
+                schedule_file_url=schedule_file.schedule_file_url,
+                course=schedule_file.course,
+            )
+
+        return groups_by_numbers
+
     def parse_schedule_file(
         self, schedule_file: models.ScheduleFileInfo = None
     ) -> List[Lesson]:
@@ -40,19 +97,34 @@ class ScheduleFileParser:
         #         'Can not parse schedule from file'
         #     )
 
-        lessons = []
-        # schedule_file_path = schedule_file.schedule_file_path
-        schedule_file_path = (
-            'tmp/schedule_files\\'
-            '56b5c973-531d-400a-ad5a-fb9a5e400118_ФВМ 1 курс.xls'
+        schedule_file = models.ScheduleFileInfo(
+            course=1,
+            schedule_file_url='test',
+            schedule_file_path=(
+                'tmp/schedule_files\\'
+                '56b5c973-531d-400a-ad5a-fb9a5e400118_ФВМ 1 курс.xls'
+            )
         )
+
+        lessons = []
+        schedule_file_path = schedule_file.schedule_file_path
+
         wb = xlrd.open_workbook(schedule_file_path)
 
         for sheet_name in wb.sheet_names():
+            if sheet_name == 'Выписки':
+                continue
+
             sh = wb.sheet_by_name(sheet_name)
             self.logger.debug(sh)
             schedule_rows = range(5, sh.nrows, 2)
 
+            # создаем группы
+            groups_by_numbers = self._greate_groups(
+                sheet_name=sheet_name,
+                schedule_file=schedule_file,
+            )
+            print(groups_by_numbers)
             i = 0
             for rx in schedule_rows:
 
@@ -111,17 +183,13 @@ class ScheduleFileParser:
                         lesson = Lesson(
                             name=lesson_name,
                             week_day_number=week_day_number,
-                            sequence_number=LessonSequence(
+                            sequence=LessonSequence(
                                 number=lesson_sequence_number,
+                                start_time=datetime.now().time(),
+                                end_time=datetime.now().time(),
                             ),
                             week_parity=week_parity,
                             teacher_full_name=teacher_full_name,
-                            study_group=StudyGroup(
-                                faculty=Faculty(id='test', name='test'),
-                                name=groups_row_names,
-                                schedule_file_url='test',
-                                course=0,
-                            ),
                             subgroup='',
                             lesson_type=None,
                             auditorium=auditorium,
@@ -173,7 +241,7 @@ class ScheduleSiteParser:
         result = BeautifulSoup(text, features='html.parser')
         return result
 
-    async def get_schedule_file_urls(self) -> List[models.ScheduleFileInfo]:
+    async def get_schedule_file_urls(self) -> List[models.ParsedData]:
         """
         Получает ссылки на файлы с расписанием с сайта
         """
@@ -185,11 +253,12 @@ class ScheduleSiteParser:
             'div', class_='faculties_groups'
         )
 
-        schedule_files = []
+        parsed_data = []
         for faculty_data in faculties_groups_data:
             faculty_name = faculty_data.find('h2').text.strip()
 
             faculty = Faculty(name=faculty_name)
+            data = models.ParsedData(faculty=faculty, )
 
             table_data = faculty_data.find('table')
             table_body_data = table_data.find('tbody')
@@ -207,15 +276,14 @@ class ScheduleSiteParser:
 
                     group_schedule_file_url = group_data.find('a').get('href')
 
-                    schedule_files.append(
+                    data.schedule_files.append(
                         models.ScheduleFileInfo(
                             course=course_number,
                             schedule_file_url=group_schedule_file_url,
-                            faculty=faculty,
                         )
                     )
 
-        return schedule_files
+        return parsed_data
 
     async def save_schedule_file(self, file_response: ClientResponse) -> str:
         """
@@ -298,9 +366,9 @@ class ScheduleSiteParser:
 
         # for schedule_file in downloaded_schedule_files:
         # schedule_file=schedule_file,
-        # faculties = await asyncio.to_thread(
-        #     self.schedule_file_parser.parse_schedule_file,
-        # )
+        faculties = await asyncio.to_thread(
+            self.schedule_file_parser.parse_schedule_file,
+        )
 
         faculties = [Faculty(
             id='test',
