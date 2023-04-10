@@ -3,6 +3,7 @@ import logging
 import os
 import uuid
 from datetime import datetime
+from pprint import pprint
 from typing import Callable, Dict, List
 
 import aiofiles
@@ -17,6 +18,7 @@ from smart_schedule_nsau.application.lesson_schedule_service import (
     Faculty,
     Lesson,
     LessonSequence,
+    LessonTypes,
     ScheduleCreator,
     StudyGroup,
     WeekParities,
@@ -89,8 +91,9 @@ class ScheduleFileParser:
         return groups_by_numbers
 
     def parse_schedule_file(
-        self, schedule_file: models.ScheduleFileInfo = None
-    ) -> List[Lesson]:
+        self,
+        schedule_file: models.ScheduleFileInfo = None
+    ) -> List[StudyGroup]:
         # if schedule_file.schedule_file_path is None:
         #     raise ValueError(
         #         'Field `schedule_file_path` is empty. '
@@ -106,11 +109,11 @@ class ScheduleFileParser:
             )
         )
 
-        lessons = []
         schedule_file_path = schedule_file.schedule_file_path
 
         wb = xlrd.open_workbook(schedule_file_path)
 
+        groups = []
         for sheet_name in wb.sheet_names():
             if sheet_name == 'Выписки':
                 continue
@@ -140,17 +143,20 @@ class ScheduleFileParser:
                 lesson_sequence_number = 1
                 for lessons_col_y in range(
                         4, max_week_lesson_sequence_number_count):
-                    # получение аудитории
-                    auditorium = str(sh.cell(rx, lessons_col_y).value).strip()
+                    # получение аудиторий
+                    audiences = str(sh.cell(rx, lessons_col_y).value
+                                    ).strip().split(' ')
 
                     # получение сырых данных о группах у которых пара
                     groups_names_cell = sh.cell(rx + 1, lessons_col_y)
                     # если указано просто число
                     if groups_names_cell.ctype == xlrd.XL_CELL_NUMBER:
                         # то переводим в строку
-                        groups_row_names = str(int(groups_names_cell.value))
+                        groups_row_names = str(int(groups_names_cell.value)
+                                               ).strip().split(',')
                     else:
-                        groups_row_names = str(groups_names_cell.value).strip()
+                        groups_row_names = str(groups_names_cell.value
+                                               ).strip().split(',')
 
                     # определение четности недели
                     if i == 0:
@@ -175,26 +181,52 @@ class ScheduleFileParser:
                         raise ValueError('Cant get `week_day_number`')
 
                     if groups_row_names:
-                        print(
-                            auditorium, groups_row_names, week_parity.value,
-                            lesson_sequence_number, week_day_number
-                        )
+                        # TODO: вынести в отдельный метод
+                        try:
+                            for groups_row_name, auditorium in zip(
+                                    groups_row_names, audiences):
 
-                        lesson = Lesson(
-                            name=lesson_name,
-                            week_day_number=week_day_number,
-                            sequence=LessonSequence(
-                                number=lesson_sequence_number,
-                                start_time=datetime.now().time(),
-                                end_time=datetime.now().time(),
-                            ),
-                            week_parity=week_parity,
-                            teacher_full_name=teacher_full_name,
-                            subgroup='',
-                            lesson_type=None,
-                            auditorium=auditorium,
-                        )
-                        print(lesson)
+                                if groups_row_name.lower() == 'л':
+                                    lesson_type = LessonTypes.lecture
+                                else:
+                                    lesson_type = LessonTypes.practical
+
+                                lesson = Lesson(
+                                    name=lesson_name,
+                                    week_day_number=week_day_number,
+                                    sequence=LessonSequence(
+                                        number=lesson_sequence_number,
+                                        start_time=datetime.now().time(),
+                                        end_time=datetime.now().time(),
+                                    ),
+                                    week_parity=week_parity,
+                                    teacher_full_name=teacher_full_name,
+                                    subgroup='',
+                                    lesson_type=lesson_type,
+                                    auditorium=auditorium,
+                                )
+
+                                # если указана лекция,
+                                # то добавляем ко всем группам
+                                if lesson_type == LessonTypes.lecture:
+                                    for group in groups_by_numbers.values():
+                                        group.lessons.append(lesson)
+                                # если указан только номер группы, то к ней
+                                elif groups_row_name.isdigit():
+                                    group_number = int(groups_row_name)
+                                    groups_by_numbers[group_number
+                                                      ].lessons.append(lesson)
+                                # если указана подгруппа,
+                                # то добавляем к группе с указанием подгруппы
+                                elif groups_row_name[-1].isalpha():
+                                    group_number = int(groups_row_name[:-1])
+                                    subgroup = groups_row_name[-1]
+                                    lesson.subgroup = subgroup
+                                    groups_by_numbers[group_number
+                                                      ].lessons.append(lesson)
+
+                        except Exception:
+                            continue
 
                     lesson_sequence_number += 1
                     if lesson_sequence_number == 7:
@@ -204,9 +236,11 @@ class ScheduleFileParser:
                 if i == 2:
                     i = 0
 
-            break
+            groups.extend(groups_by_numbers.values())
 
-        return lessons
+            break
+        pprint(groups)
+        return groups
 
 
 @component
