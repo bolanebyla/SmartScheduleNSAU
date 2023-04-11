@@ -1,11 +1,11 @@
 from sqlalchemy import (
     Column,
-    DateTime,
     ForeignKey,
     Integer,
     MetaData,
     String,
     Table,
+    Time,
 )
 from sqlalchemy.dialects.postgresql import ENUM
 
@@ -51,8 +51,8 @@ lesson_sequences = Table(
     'lesson_sequences',
     metadata,
     Column('number', Integer, primary_key=True),
-    Column('start_time', DateTime, nullable=False),
-    Column('end_time', DateTime, nullable=False),
+    Column('start_time', Time, nullable=False),
+    Column('end_time', Time, nullable=False),
 )
 
 WEEK_PARITIES_ENUM = ENUM(
