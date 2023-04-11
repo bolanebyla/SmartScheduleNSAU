@@ -24,7 +24,8 @@ class Lesson:
     """
     name: str
     week_day_number: int
-    sequence: LessonSequence
+    # TODO: сделать поле номера пары объектом
+    sequence_number: int
     week_parity: enums.WeekParities
     teacher_full_name: str
     lesson_type: enums.LessonTypes

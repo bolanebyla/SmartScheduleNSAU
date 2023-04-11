@@ -11,13 +11,13 @@ mapper.map_imperatively(entities.LessonSequence, tables.lesson_sequences)
 mapper.map_imperatively(
     entities.Lesson,
     tables.lessons,
-    properties={
-        'sequence': relationship(
-            entities.LessonSequence,
-            uselist=False,
-            lazy='joined',
-        )
-    }
+    # properties={
+    #     'sequence': relationship(
+    #         entities.LessonSequence,
+    #         uselist=False,
+    #         lazy='joined',
+    #     )
+    # }
 )
 
 mapper.map_imperatively(

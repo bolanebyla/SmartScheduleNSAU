@@ -76,11 +76,7 @@ lessons = Table(
     metadata,
     Column('name', String, primary_key=True),
     Column('week_day_number', Integer, primary_key=True),
-    Column(
-        'sequence_number',
-        ForeignKey('lesson_sequences.number', ondelete=CASCADE),
-        nullable=False
-    ),
+    Column('sequence_number', Integer, nullable=False),
     Column('week_parity', WEEK_PARITIES_ENUM, primary_key=True),
     Column('teacher_full_name', String, primary_key=True),
     Column('lesson_type', LESSON_TYPES_ENUM, primary_key=True),
