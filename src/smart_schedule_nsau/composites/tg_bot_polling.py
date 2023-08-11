@@ -18,4 +18,4 @@ bot = tg_bot.create_bot(token=Settings.tg_bot.TG_BOT_TOKEN)
 if __name__ == '__main__':
     logging.info('Starting tg bot...')
     # TODO: вынести `non_stop` в настройки
-    asyncio.run(bot.polling(non_stop=True))
+    asyncio.run(bot.polling(non_stop=False))
