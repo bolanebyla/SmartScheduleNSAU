@@ -1,4 +1,7 @@
+import uuid
+
 from sqlalchemy import (
+    UUID,
     Column,
     ForeignKey,
     Integer,
@@ -74,13 +77,14 @@ LESSON_TYPES_ENUM = ENUM(
 lessons = Table(
     'lessons',
     metadata,
-    Column('name', String, primary_key=True),
-    Column('week_day_number', Integer, primary_key=True),
+    Column('id', UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
+    Column('name', String),
+    Column('week_day_number', Integer),
     Column('sequence_number', Integer, nullable=False),
-    Column('week_parity', WEEK_PARITIES_ENUM, primary_key=True),
-    Column('teacher_full_name', String, primary_key=True),
-    Column('lesson_type', LESSON_TYPES_ENUM, primary_key=True),
-    Column('auditorium', String, primary_key=True),
+    Column('week_parity', WEEK_PARITIES_ENUM),
+    Column('teacher_full_name', String),
+    Column('lesson_type', LESSON_TYPES_ENUM),
+    Column('auditorium', String),
     Column(
         'study_group_name',
         ForeignKey('study_groups.name', ondelete=CASCADE),

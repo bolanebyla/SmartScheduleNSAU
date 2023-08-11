@@ -1,4 +1,5 @@
 # from datetime import time
+import uuid
 from datetime import time
 from typing import List, Optional
 
@@ -22,6 +23,7 @@ class Lesson:
     """
     Занятие (пара)
     """
+    id: Optional[uuid]
     name: str
     week_day_number: int
     # TODO: сделать поле номера пары объектом

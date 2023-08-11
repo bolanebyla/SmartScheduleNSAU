@@ -2,7 +2,6 @@ import asyncio
 import logging
 import os
 import uuid
-from datetime import datetime
 from pprint import pprint
 from typing import Callable, Dict, List
 
@@ -17,7 +16,6 @@ from classic.components import component
 from smart_schedule_nsau.application.lesson_schedule_service import (
     Faculty,
     Lesson,
-    LessonSequence,
     LessonTypes,
     ScheduleCreator,
     StudyGroup,
@@ -94,20 +92,20 @@ class ScheduleFileParser:
         self,
         schedule_file: models.ScheduleFileInfo = None
     ) -> List[StudyGroup]:
-        # if schedule_file.schedule_file_path is None:
-        #     raise ValueError(
-        #         'Field `schedule_file_path` is empty. '
-        #         'Can not parse schedule from file'
-        #     )
-
-        schedule_file = models.ScheduleFileInfo(
-            course=1,
-            schedule_file_url='test',
-            schedule_file_path=(
-                'tmp/schedule_files\\'
-                '56b5c973-531d-400a-ad5a-fb9a5e400118_ФВМ 1 курс.xls'
+        if schedule_file.schedule_file_path is None:
+            raise ValueError(
+                'Field `schedule_file_path` is empty. '
+                'Can not parse schedule from file'
             )
-        )
+
+        # schedule_file = models.ScheduleFileInfo(
+        #     course=1,
+        #     schedule_file_url='test',
+        #     schedule_file_path=(
+        #         'tmp/schedule_files\\'
+        #         '56b5c973-531d-400a-ad5a-fb9a5e400118_ФВМ 1 курс.xls'
+        #     )
+        # )
 
         schedule_file_path = schedule_file.schedule_file_path
 
@@ -180,7 +178,7 @@ class ScheduleFileParser:
                     else:
                         raise ValueError('Cant get `week_day_number`')
 
-                    if groups_row_names:
+                    if groups_row_names and lesson_name:
                         # TODO: вынести в отдельный метод
                         try:
                             for groups_row_name, auditorium in zip(
@@ -194,14 +192,9 @@ class ScheduleFileParser:
                                 lesson = Lesson(
                                     name=lesson_name,
                                     week_day_number=week_day_number,
-                                    sequence=LessonSequence(
-                                        number=lesson_sequence_number,
-                                        start_time=datetime.now().time(),
-                                        end_time=datetime.now().time(),
-                                    ),
+                                    sequence_number=lesson_sequence_number,
                                     week_parity=week_parity,
                                     teacher_full_name=teacher_full_name,
-                                    subgroup='',
                                     lesson_type=lesson_type,
                                     auditorium=auditorium,
                                 )
@@ -225,8 +218,8 @@ class ScheduleFileParser:
                                     groups_by_numbers[group_number
                                                       ].lessons.append(lesson)
 
-                        except Exception:
-                            continue
+                        except Exception as e:
+                            self.logger.warning(e)
 
                     lesson_sequence_number += 1
                     if lesson_sequence_number == 7:
@@ -398,17 +391,41 @@ class ScheduleSiteParser:
         #     downloaded_schedule_files
         # )
 
+        parsed_data = [
+            models.ParsedData(
+                faculty=Faculty(
+                    id='test',
+                    name='test',
+                    study_groups=[],
+                ),
+                schedule_files=[
+                    models.ScheduleFileInfo(
+                        course=1,
+                        schedule_file_url='test',
+                        schedule_file_path=(
+                            'tmp/schedule_files\\'
+                            '56b5c973-531d-400a-ad5a-fb9a5e400118_ФВМ '
+                            '1 курс.xls'
+                        )
+                    )
+                ]
+            )
+        ]
+
+        faculties = []
+        for data in parsed_data:
+            for schedule_file in data.schedule_files:
+                groups = await asyncio.to_thread(
+                    self.schedule_file_parser.parse_schedule_file,
+                    schedule_file=schedule_file,
+                )
+                data.faculty.study_groups.extend(groups)
+
+            faculties.append(data.faculty)
+
         # for schedule_file in downloaded_schedule_files:
         # schedule_file=schedule_file,
-        faculties = await asyncio.to_thread(
-            self.schedule_file_parser.parse_schedule_file,
-        )
 
-        faculties = [Faculty(
-            id='test',
-            name='test',
-            study_groups=[],
-        )]
         await self.schedule_creator.recreate_schedule(
             uow=self.uow_factory.create_uow(),
             faculties=faculties,
