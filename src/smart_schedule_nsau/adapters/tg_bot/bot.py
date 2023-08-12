@@ -1,7 +1,12 @@
 from telebot.async_telebot import AsyncTeleBot
 
-from .handlers import CommandsHandlers, CommonHandlers, MainMenuHandlers
-from .keyboards import MAIN_MENU_KEYWORD, MainMenuButtons
+from .handlers import (
+    CommandsHandlers,
+    CommonHandlers,
+    MainMenuHandlers,
+    ScheduleHandlers,
+)
+from .keyboards import MAIN_MENU_KEYWORD, MainMenuButtons, ScheduleButtons
 
 
 def register_commands_handlers(bot: AsyncTeleBot):
@@ -68,11 +73,25 @@ def register_main_menu_message_handlers(bot: AsyncTeleBot):
     )
 
 
+def register_schedule_menu_message_handlers(bot: AsyncTeleBot):
+    """
+    Регистрирует обработчики для кнопок меню "Расписание"
+    """
+    schedule_handlers = ScheduleHandlers()
+
+    bot.register_message_handler(
+        schedule_handlers.show_current_week_schedule,
+        regexp=ScheduleButtons.CURRENT_WEEK,
+        pass_bot=True,
+    )
+
+
 def create_bot(token: str) -> AsyncTeleBot:
     bot = AsyncTeleBot(token)
 
     register_commands_handlers(bot=bot)
     register_common_handlers(bot=bot)
     register_main_menu_message_handlers(bot=bot)
+    register_schedule_menu_message_handlers(bot=bot)
 
     return bot
