@@ -1,7 +1,7 @@
 from telebot.async_telebot import AsyncTeleBot
 
 from .handlers import CommandsHandlers, MainMenuHandlers
-from .keyboards import MainMenuButtons
+from .keyboards import MAIN_MENU_KEYWORD, MainMenuButtons
 
 
 def register_commands_handlers(bot: AsyncTeleBot):
@@ -23,6 +23,11 @@ def register_main_menu_message_handlers(bot: AsyncTeleBot):
     """
     main_menu_handler = MainMenuHandlers()
 
+    bot.register_message_handler(
+        main_menu_handler.show_main_menu,
+        regexp=MAIN_MENU_KEYWORD,
+        pass_bot=True,
+    )
     bot.register_message_handler(
         main_menu_handler.show_schedule_menu,
         regexp=MainMenuButtons.SCHEDULE,
