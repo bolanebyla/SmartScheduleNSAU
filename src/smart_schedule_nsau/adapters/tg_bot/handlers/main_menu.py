@@ -1,7 +1,7 @@
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message
 
-from ..keyboards import MainMenuButtons
+from ..keyboards import MainMenuButtons, ScheduleKeyboard
 
 
 class MainMenuHandlers:
@@ -12,7 +12,8 @@ class MainMenuHandlers:
         """
         await bot.send_message(
             chat_id=message.chat.id,
-            text=MainMenuButtons.SCHEDULE,
+            text='Выберите период',
+            reply_markup=ScheduleKeyboard(),
         )
 
     async def show_nearest_lesson_menu(

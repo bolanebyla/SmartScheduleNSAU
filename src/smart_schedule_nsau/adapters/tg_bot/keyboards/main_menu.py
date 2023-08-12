@@ -4,6 +4,8 @@ from telebot.types import KeyboardButton
 
 from .base import BaseKeyboard
 
+MAIN_MENU_KEYWORD = 'Основное меню'
+
 
 class MainMenuButtons(StrEnum):
     SCHEDULE = 'Расписание 🗓'
