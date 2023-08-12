@@ -1,6 +1,6 @@
 from telebot.async_telebot import AsyncTeleBot
 
-from .handlers import CommandsHandlers, MainMenuHandlers
+from .handlers import CommandsHandlers, CommonHandlers, MainMenuHandlers
 from .keyboards import MAIN_MENU_KEYWORD, MainMenuButtons
 
 
@@ -17,17 +17,25 @@ def register_commands_handlers(bot: AsyncTeleBot):
     )
 
 
+def register_common_handlers(bot: AsyncTeleBot):
+    """
+    Регистрирует общие обработчики
+    """
+    common_handlers = CommonHandlers()
+
+    bot.register_message_handler(
+        common_handlers.show_main_menu,
+        regexp=MAIN_MENU_KEYWORD,
+        pass_bot=True,
+    )
+
+
 def register_main_menu_message_handlers(bot: AsyncTeleBot):
     """
     Регистрирует обработчики для кнопок основного меню
     """
     main_menu_handler = MainMenuHandlers()
 
-    bot.register_message_handler(
-        main_menu_handler.show_main_menu,
-        regexp=MAIN_MENU_KEYWORD,
-        pass_bot=True,
-    )
     bot.register_message_handler(
         main_menu_handler.show_schedule_menu,
         regexp=MainMenuButtons.SCHEDULE,
@@ -63,7 +71,8 @@ def register_main_menu_message_handlers(bot: AsyncTeleBot):
 def create_bot(token: str) -> AsyncTeleBot:
     bot = AsyncTeleBot(token)
 
-    register_main_menu_message_handlers(bot=bot)
     register_commands_handlers(bot=bot)
+    register_common_handlers(bot=bot)
+    register_main_menu_message_handlers(bot=bot)
 
     return bot
