@@ -24,14 +24,14 @@ class ScheduleHandlers:
         """
 
         group_name = '123-1'
-        week_parity_name = 'четная'
+        week_parity = WeekParities.EVEN
 
         schedule_info_text = f'Расписание {group_name}\n' \
-                             f'Неделя: {week_parity_name}'
+                             f'Неделя: {week_parity.value}'
 
         lessons = self._get_week_schedule_for_group.execute(
-            group_name='4324',
-            week_parity=WeekParities.EVEN,
+            group_name='group_name',
+            week_parity=week_parity,
         )
 
         await bot.send_message(
