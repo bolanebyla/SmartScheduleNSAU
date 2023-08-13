@@ -1,12 +1,7 @@
 from abc import ABC, abstractmethod
-from datetime import time
 from typing import List
 
-from smart_schedule_nsau.application.lesson_schedule_service import (
-    Lesson,
-    LessonTypes,
-    WeekParities,
-)
+from smart_schedule_nsau.application.lesson_schedule_service import Lesson
 
 
 class BaseView(ABC):
@@ -64,15 +59,3 @@ class DayLessonsView(BaseView):
             lessons_view_str += f'\n{"-" * 43}\n'
 
         return lessons_view_str
-
-
-lesson_1 = Lesson(
-    name='Анатомия',
-    week_day_number=1,
-    time=time(hour=11, minute=45),
-    week_parity=WeekParities.EVEN,
-    teacher_full_name='Иванов Иван Иванович',
-    lesson_type=LessonTypes.LECTURE,
-    auditorium='432',
-    comment='Перенесено с 25',
-)
