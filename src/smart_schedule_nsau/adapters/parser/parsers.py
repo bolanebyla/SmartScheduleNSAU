@@ -158,9 +158,9 @@ class ScheduleFileParser:
 
                     # определение четности недели
                     if i == 0:
-                        week_parity = WeekParities.odd
+                        week_parity = WeekParities.ODD
                     else:
-                        week_parity = WeekParities.even
+                        week_parity = WeekParities.EVEN
 
                     # определение дня недели
                     if lessons_col_y in list(range(4, 10)):
@@ -185,9 +185,9 @@ class ScheduleFileParser:
                                     groups_row_names, audiences):
 
                                 if groups_row_name.lower() == 'л':
-                                    lesson_type = LessonTypes.lecture
+                                    lesson_type = LessonTypes.LECTURE
                                 else:
-                                    lesson_type = LessonTypes.practical
+                                    lesson_type = LessonTypes.PRACTICAL
 
                                 lesson = Lesson(
                                     name=lesson_name,
@@ -201,7 +201,7 @@ class ScheduleFileParser:
 
                                 # если указана лекция,
                                 # то добавляем ко всем группам
-                                if lesson_type == LessonTypes.lecture:
+                                if lesson_type == LessonTypes.LECTURE:
                                     for group in groups_by_numbers.values():
                                         group.lessons.append(lesson)
                                 # если указан только номер группы, то к ней

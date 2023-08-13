@@ -1,5 +1,3 @@
-# from datetime import time
-import uuid
 from datetime import time
 from typing import List, Optional
 
@@ -23,16 +21,14 @@ class Lesson:
     """
     Занятие (пара)
     """
-    id: Optional[uuid]
     name: str
     week_day_number: int
-    # TODO: сделать поле номера пары объектом
-    sequence_number: int
+    time: time
     week_parity: enums.WeekParities
     teacher_full_name: str
     lesson_type: enums.LessonTypes
-    auditorium: str
-    subgroup: Optional[str] = None
+    auditorium: Optional[str] = None
+    comment: Optional[str] = None
 
 
 @attr.dataclass
