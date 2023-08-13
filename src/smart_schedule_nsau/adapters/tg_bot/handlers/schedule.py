@@ -9,6 +9,9 @@ from smart_schedule_nsau.application.lesson_schedule_service import (
 
 
 class ScheduleHandlers:
+    """
+    Обработчики меню "Расписание"
+    """
 
     def __init__(
         self,
@@ -29,8 +32,8 @@ class ScheduleHandlers:
         schedule_info_text = f'Расписание {group_name}\n' \
                              f'Неделя: {week_parity.value}'
 
-        lessons = self._get_week_schedule_for_group.execute(
-            group_name='group_name',
+        lessons_days = self._get_week_schedule_for_group.execute(
+            group_name=group_name,
             week_parity=week_parity,
         )
 
@@ -39,8 +42,11 @@ class ScheduleHandlers:
             text=schedule_info_text,
         )
 
-        # TODO: выводить расписание для каждого дня
-        await bot.send_message(
-            chat_id=message.chat.id,
-            text=DayLessonsView(lessons).to_str(),
-        )
+        for lessons_day in lessons_days:
+            lessons = lessons_day.lessons
+            # TODO: выводить название дня недели
+            #  (создать соответсвующее представление)
+            await bot.send_message(
+                chat_id=message.chat.id,
+                text=DayLessonsView(lessons).to_str(),
+            )
