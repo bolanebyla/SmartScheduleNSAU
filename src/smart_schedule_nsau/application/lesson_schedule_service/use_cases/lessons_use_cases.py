@@ -5,7 +5,7 @@ from ..entities import Lesson
 from ..enums import LessonTypes, WeekParities
 
 
-class GetWeekScheduleForGroupByWeekParityUseCase:
+class GetWeekScheduleForGroupUseCase:
     """
     Получение расписания занятий на неделю для группы по четности недели
     """

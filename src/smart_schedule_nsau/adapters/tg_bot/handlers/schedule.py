@@ -1,8 +1,20 @@
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message
 
+from smart_schedule_nsau.adapters.tg_bot.views import DayLessonsView
+from smart_schedule_nsau.application.lesson_schedule_service import (
+    GetWeekScheduleForGroupUseCase,
+    WeekParities,
+)
+
 
 class ScheduleHandlers:
+
+    def __init__(
+        self,
+        get_week_schedule_for_group: GetWeekScheduleForGroupUseCase,
+    ):
+        self._get_week_schedule_for_group = get_week_schedule_for_group
 
     async def show_current_week_schedule(
         self, message: Message, bot: AsyncTeleBot
@@ -17,49 +29,18 @@ class ScheduleHandlers:
         schedule_info_text = f'Расписание {group_name}\n' \
                              f'Неделя: {week_parity_name}'
 
-        # TODO: вынести формирование расписания в отдельный метод
-        schedule_for_day_1 = '''
-        🍎ПОНЕДЕЛЬНИК🍎
--------------------------------------------
-11:45
-Аудитория: Ж-321
-👉Технология построения защищенных компьютерных сетей
-( Лекция ) Бжевский Кирилл Петрович
--------------------------------------------
-13:45
-Аудитория: Ж-309
-👉Основы управления информационной безопасностью
-( Практ. ) Маринов Александр Андреевич
--------------------------------------------
-        '''
-        schedule_for_day_2 = '''
-        🍎ВТОРНИК🍎
--------------------------------------------
-11:45
-Аудитория: Ж-309
-👉Безопасность систем баз данных
-( Лекция ) Тюрнев Александр Сергеевич
--------------------------------------------
-13:45
-Аудитория: Ж-309
-👉Основы управления информационной безопасностью
-( Лекция ) Маринов Александр Андреевич
--------------------------------------------
-15:30
-Аудитория: Ж-309
-👉Безопасность систем баз данных
-( Лаб. раб. подгруппа 2 ) Тюрнев Александр Сергеевич
--------------------------------------------'''
-
-        schedule_text_by_days = [schedule_for_day_1, schedule_for_day_2]
+        lessons = self._get_week_schedule_for_group.execute(
+            group_name='4324',
+            week_parity=WeekParities.EVEN,
+        )
 
         await bot.send_message(
             chat_id=message.chat.id,
             text=schedule_info_text,
         )
 
-        for schedule_for_day in schedule_text_by_days:
-            await bot.send_message(
-                chat_id=message.chat.id,
-                text=schedule_for_day,
-            )
+        # TODO: выводить расписание для каждого дня
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text=DayLessonsView(lessons).to_str(),
+        )
