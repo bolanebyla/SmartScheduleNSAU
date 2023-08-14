@@ -1,12 +1,11 @@
 from abc import ABC, abstractmethod
-from datetime import time
-from typing import List
 
-from smart_schedule_nsau.application.lesson_schedule_service import (
-    Lesson,
-    LessonTypes,
-    WeekParities,
+from smart_schedule_nsau.application.lesson_schedule_service import Lesson
+from smart_schedule_nsau.application.lesson_schedule_service.entities import (
+    LessonsDay,
 )
+
+LESSONS_SEPARATOR = '-' * 43
 
 
 class BaseView(ABC):
@@ -46,37 +45,21 @@ class LessonView(BaseView):
         return lessons_str
 
 
-class DayLessonsView(BaseView):
+class LessonsDayView(BaseView):
     """
     Представление занятий (пар) одного дня в формате для отображения
     """
 
-    def __init__(self, lessons: List[Lesson]):
-        self._lessons = lessons
+    def __init__(self, lessons_day: LessonsDay):
+        self._lessons_day = lessons_day
 
     def to_str(self) -> str:
-        lessons_view_str = ''
-        for lesson in self._lessons:
-            lesson_view = LessonView(lesson=lesson)
+        lessons_view_str = f'{self._lessons_day.name.upper()}\n'
+        for lessons in self._lessons_day.lessons:
+            lesson_view = LessonView(lesson=lessons)
             lesson_view_str = lesson_view.to_str()
 
             lessons_view_str += lesson_view_str
-            lessons_view_str += f'\n{"-" * 43}\n'
+            lessons_view_str += f'\n{LESSONS_SEPARATOR}\n'
 
         return lessons_view_str
-
-
-# TODO: убрать после тестов
-if __name__ == '__main__':
-    lesson_1 = Lesson(
-        name='Анатомия',
-        week_day_number=1,
-        time=time(hour=11, minute=45),
-        week_parity=WeekParities.EVEN,
-        teacher_full_name='Иванов Иван Иванович',
-        lesson_type=LessonTypes.LECTURE,
-        auditorium='432',
-        comment='Перенесено с 25',
-    )
-
-    print(DayLessonsView([lesson_1]))

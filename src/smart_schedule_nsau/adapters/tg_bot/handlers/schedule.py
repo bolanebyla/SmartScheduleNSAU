@@ -1,7 +1,7 @@
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message
 
-from smart_schedule_nsau.adapters.tg_bot.views import DayLessonsView
+from smart_schedule_nsau.adapters.tg_bot.views import LessonsDayView
 from smart_schedule_nsau.application.lesson_schedule_service import (
     GetWeekScheduleForGroupUseCase,
     WeekParities,
@@ -25,7 +25,7 @@ class ScheduleHandlers:
         """
         Показывает расписание на текущую неделю
         """
-
+        # TODO: брать данные у пользователя
         group_name = '123-1'
         week_parity = WeekParities.EVEN
 
@@ -43,10 +43,7 @@ class ScheduleHandlers:
         )
 
         for lessons_day in lessons_days:
-            lessons = lessons_day.lessons
-            # TODO: выводить название дня недели
-            #  (создать соответсвующее представление)
             await bot.send_message(
                 chat_id=message.chat.id,
-                text=DayLessonsView(lessons).to_str(),
+                text=LessonsDayView(lessons_day).to_str(),
             )
