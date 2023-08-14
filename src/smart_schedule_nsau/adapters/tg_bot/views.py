@@ -1,14 +1,30 @@
 from abc import ABC, abstractmethod
+from datetime import datetime
 
-from smart_schedule_nsau.application.lesson_schedule_service import Lesson
-from smart_schedule_nsau.application.lesson_schedule_service.entities import (
+from smart_schedule_nsau.application.lesson_schedule_service import (
+    Lesson,
     LessonsDay,
 )
 
+# разделитель между занятиями (парами) при отображении
 LESSONS_SEPARATOR = '-' * 43
 
 
-class BaseView(ABC):
+def _is_it_today(lessons_day: LessonsDay) -> bool:
+    """
+    Проверяет проходит ли переданный учебный день сегодня
+    :param lessons_day: учебный день
+    :return: True - проходит сегодня
+    """
+    # TODO: учитывать таймзону
+    date_now = datetime.now()
+    return date_now.weekday() + 1 == lessons_day.number
+
+
+class BaseMessageTextView(ABC):
+    """
+    Базовый класс представлений для отображения в сообщениях чат бота
+    """
 
     @abstractmethod
     def to_str(self) -> str:
@@ -18,7 +34,7 @@ class BaseView(ABC):
         return self.to_str()
 
 
-class LessonView(BaseView):
+class LessonView(BaseMessageTextView):
     """
     Представление занятия (пары) в формате для отображения
     """
@@ -45,7 +61,7 @@ class LessonView(BaseView):
         return lessons_str
 
 
-class LessonsDayView(BaseView):
+class LessonsDayView(BaseMessageTextView):
     """
     Представление занятий (пар) одного дня в формате для отображения
     """
@@ -54,7 +70,15 @@ class LessonsDayView(BaseView):
         self._lessons_day = lessons_day
 
     def to_str(self) -> str:
-        lessons_view_str = f'{self._lessons_day.name.upper()}\n'
+        # день недели
+        if _is_it_today(self._lessons_day):
+            lessons_view_str = f'🍏{self._lessons_day.name.upper()}🍏'
+        else:
+            lessons_view_str = f'🍎{self._lessons_day.name.upper()}🍎'
+
+        lessons_view_str += f'\n{LESSONS_SEPARATOR}\n'
+
+        # занятия (пары)
         for lessons in self._lessons_day.lessons:
             lesson_view = LessonView(lesson=lessons)
             lesson_view_str = lesson_view.to_str()
