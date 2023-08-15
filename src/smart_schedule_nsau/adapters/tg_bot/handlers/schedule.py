@@ -46,8 +46,10 @@ class ScheduleHandlers:
             group_name=group_name,
         )
 
-        schedule_info_text = f'Расписание {group_name}\n' \
-                             f'Неделя: {week_schedule.week_parity.value}'
+        schedule_info_text = (
+            f'Расписание {group_name}\n'
+            f'Неделя: {week_schedule.week_parity.value}'
+        )
 
         await bot.send_message(
             chat_id=message.chat.id,
