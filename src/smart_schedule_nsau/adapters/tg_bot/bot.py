@@ -1,7 +1,7 @@
 from telebot.async_telebot import AsyncTeleBot
 
 from smart_schedule_nsau.application.lesson_schedule_service import (
-    GetWeekScheduleForGroupUseCase,
+    GetCurrentWeekScheduleForGroupUseCase,
 )
 
 from .handlers import (
@@ -79,13 +79,13 @@ def register_main_menu_message_handlers(bot: AsyncTeleBot):
 
 def register_schedule_menu_message_handlers(
     bot: AsyncTeleBot,
-    get_week_schedule_for_group: GetWeekScheduleForGroupUseCase,
+    get_current_week_schedule_for_group: GetCurrentWeekScheduleForGroupUseCase,
 ):
     """
     Регистрирует обработчики для кнопок меню "Расписание"
     """
     schedule_handlers = ScheduleHandlers(
-        get_week_schedule_for_group=get_week_schedule_for_group,
+        get_current_week_schedule_for_group=get_current_week_schedule_for_group,
     )
 
     bot.register_message_handler(
@@ -96,7 +96,8 @@ def register_schedule_menu_message_handlers(
 
 
 def create_bot(
-    token: str, get_week_schedule_for_group: GetWeekScheduleForGroupUseCase
+    token: str,
+    get_current_week_schedule_for_group: GetCurrentWeekScheduleForGroupUseCase
 ) -> AsyncTeleBot:
     bot = AsyncTeleBot(token)
 
@@ -105,7 +106,7 @@ def create_bot(
     register_main_menu_message_handlers(bot=bot)
     register_schedule_menu_message_handlers(
         bot=bot,
-        get_week_schedule_for_group=get_week_schedule_for_group,
+        get_current_week_schedule_for_group=get_current_week_schedule_for_group,
     )
 
     return bot

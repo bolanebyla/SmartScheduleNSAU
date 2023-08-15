@@ -1,17 +1,17 @@
 from datetime import time
-from typing import List
 
+from ..dtos import WeekScheduleForGroupResult
 from ..entities import Lesson, LessonsDay
 from ..enums import LessonTypes, WeekParities
 
 
-class GetWeekScheduleForGroupUseCase:
+class GetCurrentWeekScheduleForGroupUseCase:
     """
     Получение расписания занятий на неделю для учебной группы
     """
 
-    def execute(self, group_name: str,
-                week_parity: WeekParities) -> List[LessonsDay]:
+    def execute(self, group_name: str) -> WeekScheduleForGroupResult:
+        week_parity = WeekParities.EVEN
 
         # TODO: получать данные из repo
         lesson_1 = Lesson(
@@ -41,4 +41,9 @@ class GetWeekScheduleForGroupUseCase:
 
         lessons_days = [lessons_day_1, lessons_day_2]
 
-        return lessons_days
+        week_schedule_for_group = WeekScheduleForGroupResult(
+            lessons_days=lessons_days,
+            week_parity=week_parity,
+        )
+
+        return week_schedule_for_group

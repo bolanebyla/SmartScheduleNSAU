@@ -5,9 +5,8 @@ from telebot.types import Message
 
 from smart_schedule_nsau.adapters.tg_bot.views import LessonsDayView
 from smart_schedule_nsau.application.lesson_schedule_service import (
-    GetWeekScheduleForGroupUseCase,
+    GetCurrentWeekScheduleForGroupUseCase,
     LessonsDay,
-    WeekParities,
 )
 
 
@@ -29,9 +28,10 @@ class ScheduleHandlers:
 
     def __init__(
         self,
-        get_week_schedule_for_group: GetWeekScheduleForGroupUseCase,
+        get_current_week_schedule_for_group:
+        GetCurrentWeekScheduleForGroupUseCase,
     ):
-        self._get_week_schedule_for_group = get_week_schedule_for_group
+        self._get_current_week_schedule_for_group = get_current_week_schedule_for_group    # noqa
 
     async def show_current_week_schedule(
         self, message: Message, bot: AsyncTeleBot
@@ -41,22 +41,20 @@ class ScheduleHandlers:
         """
         # TODO: брать данные у пользователя
         group_name = '123-1'
-        week_parity = WeekParities.EVEN
+
+        week_schedule = self._get_current_week_schedule_for_group.execute(
+            group_name=group_name,
+        )
 
         schedule_info_text = f'Расписание {group_name}\n' \
-                             f'Неделя: {week_parity.value}'
-
-        lessons_days = self._get_week_schedule_for_group.execute(
-            group_name=group_name,
-            week_parity=week_parity,
-        )
+                             f'Неделя: {week_schedule.week_parity.value}'
 
         await bot.send_message(
             chat_id=message.chat.id,
             text=schedule_info_text,
         )
 
-        for lessons_day in lessons_days:
+        for lessons_day in week_schedule.lessons_days:
             mark_as_today = _is_it_today(lessons_day=lessons_day)
             await bot.send_message(
                 chat_id=message.chat.id,
