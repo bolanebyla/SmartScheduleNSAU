@@ -1,11 +1,25 @@
+from datetime import datetime
+
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message
 
 from smart_schedule_nsau.adapters.tg_bot.views import LessonsDayView
 from smart_schedule_nsau.application.lesson_schedule_service import (
     GetWeekScheduleForGroupUseCase,
+    LessonsDay,
     WeekParities,
 )
+
+
+def _is_it_today(lessons_day: LessonsDay) -> bool:
+    """
+    Проверяет проходит ли переданный учебный день сегодня
+    :param lessons_day: учебный день
+    :return: True - проходит сегодня
+    """
+    # TODO: учитывать таймзону
+    date_now = datetime.now()
+    return date_now.weekday() + 1 == lessons_day.number
 
 
 class ScheduleHandlers:
@@ -43,7 +57,11 @@ class ScheduleHandlers:
         )
 
         for lessons_day in lessons_days:
+            mark_as_today = _is_it_today(lessons_day=lessons_day)
             await bot.send_message(
                 chat_id=message.chat.id,
-                text=LessonsDayView(lessons_day).to_str(),
+                text=LessonsDayView(
+                    lessons_day=lessons_day,
+                    mark_as_today=mark_as_today,
+                ).to_str(),
             )

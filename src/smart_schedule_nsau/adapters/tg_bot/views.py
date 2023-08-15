@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from datetime import datetime
 
 from smart_schedule_nsau.application.lesson_schedule_service import (
     Lesson,
@@ -8,17 +7,6 @@ from smart_schedule_nsau.application.lesson_schedule_service import (
 
 # разделитель между занятиями (парами) при отображении
 LESSONS_SEPARATOR = '-' * 43
-
-
-def _is_it_today(lessons_day: LessonsDay) -> bool:
-    """
-    Проверяет проходит ли переданный учебный день сегодня
-    :param lessons_day: учебный день
-    :return: True - проходит сегодня
-    """
-    # TODO: учитывать таймзону
-    date_now = datetime.now()
-    return date_now.weekday() + 1 == lessons_day.number
 
 
 class BaseMessageTextView(ABC):
@@ -66,12 +54,13 @@ class LessonsDayView(BaseMessageTextView):
     Представление занятий (пар) одного дня в формате для отображения
     """
 
-    def __init__(self, lessons_day: LessonsDay):
+    def __init__(self, lessons_day: LessonsDay, mark_as_today: bool = False):
         self._lessons_day = lessons_day
+        self._mark_as_today = mark_as_today
 
     def to_str(self) -> str:
         # день недели
-        if _is_it_today(self._lessons_day):
+        if self._mark_as_today:
             lessons_view_str = f'🍏{self._lessons_day.name.upper()}🍏'
         else:
             lessons_view_str = f'🍎{self._lessons_day.name.upper()}🍎'
