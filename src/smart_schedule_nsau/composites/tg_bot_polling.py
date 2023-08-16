@@ -1,5 +1,4 @@
 import asyncio
-import logging
 
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -21,7 +20,10 @@ class Settings:
 
 
 class Logger:
-    log.configure()
+    log.configure(
+        Settings.db.LOGGING_CONFIG,
+        Settings.tg_bot.LOGGING_CONFIG,
+    )
 
 
 class DB:
@@ -51,6 +53,5 @@ bot = tg_bot.create_bot(
 )
 
 if __name__ == '__main__':
-    logging.info('Starting tg bot...')
     # TODO: вынести `non_stop` в настройки
     asyncio.run(bot.polling(non_stop=False))
