@@ -4,6 +4,7 @@ from smart_schedule_nsau.application.lesson_schedule_service import (
     GetCurrentWeekScheduleForGroupUseCase,
 )
 
+from ..database.uow import UnitOfWorkFactory
 from .handlers import (
     CommandsHandlers,
     CommonHandlers,
@@ -80,12 +81,14 @@ def register_main_menu_message_handlers(bot: AsyncTeleBot):
 def register_schedule_menu_message_handlers(
     bot: AsyncTeleBot,
     get_current_week_schedule_for_group: GetCurrentWeekScheduleForGroupUseCase,
+    uow_factory: UnitOfWorkFactory,
 ):
     """
     Регистрирует обработчики для кнопок меню "Расписание"
     """
     schedule_handlers = ScheduleHandlers(
         get_current_week_schedule_for_group=get_current_week_schedule_for_group,
+        uow_factory=uow_factory,
     )
 
     bot.register_message_handler(
@@ -97,7 +100,8 @@ def register_schedule_menu_message_handlers(
 
 def create_bot(
     token: str,
-    get_current_week_schedule_for_group: GetCurrentWeekScheduleForGroupUseCase
+    get_current_week_schedule_for_group: GetCurrentWeekScheduleForGroupUseCase,
+    uow_factory: UnitOfWorkFactory,
 ) -> AsyncTeleBot:
     bot = AsyncTeleBot(token)
 
@@ -107,6 +111,7 @@ def create_bot(
     register_schedule_menu_message_handlers(
         bot=bot,
         get_current_week_schedule_for_group=get_current_week_schedule_for_group,
+        uow_factory=uow_factory,
     )
 
     return bot

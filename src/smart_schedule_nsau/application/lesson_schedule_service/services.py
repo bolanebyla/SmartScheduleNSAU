@@ -2,7 +2,7 @@ from typing import List
 
 from classic.components import component
 
-from . import entities, interfaces
+from . import entities
 
 
 @component
@@ -10,7 +10,7 @@ class ScheduleCreator:
 
     async def recreate_schedule(
         self,
-        uow: interfaces.IUnitOfWork,
+        uow,
         faculties: List[entities.Faculty],
     ):
         async with uow:

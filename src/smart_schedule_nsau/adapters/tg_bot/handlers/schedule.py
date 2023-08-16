@@ -3,6 +3,7 @@ from datetime import datetime
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message
 
+from smart_schedule_nsau.adapters.database.uow import UnitOfWorkFactory
 from smart_schedule_nsau.adapters.tg_bot.views import LessonsDayView
 from smart_schedule_nsau.application.lesson_schedule_service import (
     GetCurrentWeekScheduleForGroupUseCase,
@@ -27,11 +28,12 @@ class ScheduleHandlers:
     """
 
     def __init__(
-        self,
-        get_current_week_schedule_for_group:
-        GetCurrentWeekScheduleForGroupUseCase,
+        self, get_current_week_schedule_for_group:
+        GetCurrentWeekScheduleForGroupUseCase, uow_factory: UnitOfWorkFactory
     ):
         self._get_current_week_schedule_for_group = get_current_week_schedule_for_group    # noqa
+
+        self._uow_factory = uow_factory
 
     async def show_current_week_schedule(
         self, message: Message, bot: AsyncTeleBot
@@ -42,8 +44,8 @@ class ScheduleHandlers:
         # TODO: брать данные у пользователя
         group_name = '123-1'
 
-        week_schedule = self._get_current_week_schedule_for_group.execute(
-            group_name=group_name,
+        week_schedule = await self._get_current_week_schedule_for_group.execute(
+            group_name=group_name, uow=self._uow_factory.create_uow()
         )
 
         schedule_info_text = (

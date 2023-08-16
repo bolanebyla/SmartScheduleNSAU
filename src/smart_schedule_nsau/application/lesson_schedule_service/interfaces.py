@@ -1,35 +1,34 @@
-from __future__ import annotations
+from typing import List, Protocol
 
-from abc import ABC, abstractmethod
-from typing import List
-
-from smart_schedule_nsau.application.lesson_schedule_service import Faculty
+from smart_schedule_nsau.application.lesson_schedule_service import LessonsDay
 
 
-class IScheduleChangeRepo(ABC):
+class BaseUnitOfWork(Protocol):
 
-    @abstractmethod
-    async def delete_schedule(self):
-        ...
-
-    @abstractmethod
-    def create_schedule(self, faculties: List[Faculty]):
-        ...
-
-
-class IUnitOfWork(ABC):
-    schedule_change_repo: IScheduleChangeRepo
-
-    async def __aenter__(self) -> IUnitOfWork:
+    async def __aenter__(self):
         return self
 
     async def __aexit__(self, *args):
         await self.rollback()
 
-    @abstractmethod
     async def commit(self):
         ...
 
-    @abstractmethod
     async def rollback(self):
         ...
+
+
+class IScheduleRepo(Protocol):
+
+    async def get_group_schedule(self, group_name: str) -> List[LessonsDay]:
+        """
+        Получает расписание занятий для учебной группы
+
+        :param group_name: название учебной группы
+        :return: расписание занятий
+        """
+        ...
+
+
+class IScheduleUnitOfWork(BaseUnitOfWork, Protocol):
+    schedule_repo: IScheduleRepo
