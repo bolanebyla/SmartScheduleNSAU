@@ -10,6 +10,7 @@ from smart_schedule_nsau.adapters import database, log, settings, tg_bot
 from smart_schedule_nsau.adapters.database.uow import UnitOfWorkFactory
 from smart_schedule_nsau.application.lesson_schedule_service import (
     GetCurrentWeekScheduleForGroupUseCase,
+    WeekParityDeterminant,
 )
 
 
@@ -40,8 +41,15 @@ class UoW:
     uow_factory = UnitOfWorkFactory(session_factory=DB.session_factory)
 
 
+class Services:
+    week_parity_determinant = WeekParityDeterminant(
+        tz_info=Settings.common_settings.TZ_INFO,
+    )
+
+
 class UseCases:
     get_current_week_schedule_for_group = GetCurrentWeekScheduleForGroupUseCase(
+        week_parity_determinant=Services.week_parity_determinant,
     )
 
 
