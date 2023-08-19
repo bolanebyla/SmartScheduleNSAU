@@ -5,7 +5,7 @@ from telebot.types import Message
 
 from smart_schedule_nsau.adapters.database.uow import UnitOfWorkFactory
 from smart_schedule_nsau.adapters.tg_bot.views import LessonsDayView
-from smart_schedule_nsau.application.lesson_schedule_service import (
+from smart_schedule_nsau.application.lessons_schedule import (
     GetCurrentWeekScheduleForGroupUseCase,
     LessonsDay,
 )

@@ -12,7 +12,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import ENUM
 
-from smart_schedule_nsau.application.lesson_schedule_service import (
+from smart_schedule_nsau.application.lessons_schedule import (
     LessonTypes,
     WeekParities,
 )

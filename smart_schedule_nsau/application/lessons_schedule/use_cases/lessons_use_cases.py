@@ -21,7 +21,7 @@ class GetCurrentWeekScheduleForGroupUseCase:
 
             # TODO: получать занятия только для определенной четности недели
             lessons_days = await uow.schedule_repo.get_group_schedule(
-                group_name=group_name
+                group_name=group_name,
             )
 
             week_schedule_for_group = WeekScheduleForGroupResult(

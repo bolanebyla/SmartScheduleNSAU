@@ -3,9 +3,7 @@ from sqlalchemy.orm import sessionmaker
 
 from smart_schedule_nsau.adapters import database, log, parser, settings
 from smart_schedule_nsau.adapters.database.uow import UnitOfWorkFactory
-from smart_schedule_nsau.application.lesson_schedule_service import (
-    ScheduleCreator,
-)
+from smart_schedule_nsau.application.lessons_schedule import ScheduleCreator
 
 
 class Settings:

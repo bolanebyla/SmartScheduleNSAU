@@ -13,7 +13,7 @@ from aiohttp import ClientResponse
 from bs4 import BeautifulSoup
 from classic.components import component
 
-from smart_schedule_nsau.application.lesson_schedule_service import (
+from smart_schedule_nsau.application.lessons_schedule import (
     Faculty,
     Lesson,
     LessonTypes,

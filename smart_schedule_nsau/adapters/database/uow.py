@@ -2,9 +2,7 @@ from classic.components import component
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 
-from smart_schedule_nsau.application.lesson_schedule_service import (
-    IScheduleUnitOfWork,
-)
+from smart_schedule_nsau.application.lessons_schedule import IScheduleUnitOfWork
 
 from . import repositories
 

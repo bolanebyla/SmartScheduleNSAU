@@ -2,7 +2,7 @@ from typing import List
 
 import attr
 
-from smart_schedule_nsau.application.lesson_schedule_service import (
+from smart_schedule_nsau.application.lessons_schedule import (
     LessonsDay,
     WeekParities,
 )

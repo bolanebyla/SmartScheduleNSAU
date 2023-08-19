@@ -1,9 +1,6 @@
 from abc import ABC, abstractmethod
 
-from smart_schedule_nsau.application.lesson_schedule_service import (
-    Lesson,
-    LessonsDay,
-)
+from smart_schedule_nsau.application.lessons_schedule import Lesson, LessonsDay
 
 # разделитель между занятиями (парами) при отображении
 LESSONS_SEPARATOR = '-' * 43

@@ -1,6 +1,6 @@
 from typing import List, Protocol
 
-from smart_schedule_nsau.application.lesson_schedule_service import LessonsDay
+from smart_schedule_nsau.application.lessons_schedule import LessonsDay
 
 
 class BaseUnitOfWork(Protocol):

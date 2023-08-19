@@ -1,6 +1,6 @@
 from sqlalchemy.orm import registry
 
-# from smart_schedule_nsau.application.lesson_schedule_service import entities
+# from smart_schedule_nsau.application.lessons_schedule import entities
 #
 # from . import tables
 

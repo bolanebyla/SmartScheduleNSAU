@@ -2,7 +2,7 @@ from typing import List, Optional
 
 import attr
 
-from smart_schedule_nsau.application.lesson_schedule_service import Faculty
+from smart_schedule_nsau.application.lessons_schedule import Faculty
 
 
 @attr.dataclass
