@@ -19,9 +19,9 @@ class GetCurrentWeekScheduleForGroupUseCase:
         async with uow:
             week_parity = self.week_parity_determinant.get_current_week_parity()
 
-            # TODO: получать занятия только для определенной четности недели
             lessons_days = await uow.schedule_repo.get_group_schedule(
                 group_name=group_name,
+                week_parity=week_parity,
             )
 
             week_schedule_for_group = WeekScheduleForGroupResult(
@@ -45,9 +45,9 @@ class GetNextWeekScheduleForGroupUseCase:
         async with uow:
             week_parity = self.week_parity_determinant.get_next_week_parity()
 
-            # TODO: получать занятия только для определенной четности недели
             lessons_days = await uow.schedule_repo.get_group_schedule(
                 group_name=group_name,
+                week_parity=week_parity,
             )
 
             week_schedule_for_group = WeekScheduleForGroupResult(

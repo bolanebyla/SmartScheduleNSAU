@@ -13,7 +13,6 @@ class Lesson:
     """
     name: str
     time: time
-    week_parity: WeekParities
     teacher_full_name: str
     lesson_type: LessonTypes
     auditorium: Optional[str] = None
@@ -27,22 +26,8 @@ class LessonsDay:
     """
     number: int
     name: str
+    week_parity: WeekParities
     lessons: List[Lesson] = attr.ib(factory=list)
-
-    def get_lessons_by_week_parity(
-        self,
-        week_parity: WeekParities,
-    ) -> List[Lesson]:
-        """
-        Получает занятия (пары) по четности недели
-
-        :param week_parity: четность недели
-        """
-        lessons = [
-            lesson for lesson in self.lessons
-            if lesson.week_parity == week_parity
-        ]
-        return lessons
 
 
 @attr.dataclass

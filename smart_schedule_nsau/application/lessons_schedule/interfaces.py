@@ -1,6 +1,9 @@
 from typing import List, Protocol
 
-from smart_schedule_nsau.application.lessons_schedule import LessonsDay
+from smart_schedule_nsau.application.lessons_schedule import (
+    LessonsDay,
+    WeekParities,
+)
 
 
 class BaseUnitOfWork(Protocol):
@@ -20,11 +23,14 @@ class BaseUnitOfWork(Protocol):
 
 class IScheduleRepo(Protocol):
 
-    async def get_group_schedule(self, group_name: str) -> List[LessonsDay]:
+    async def get_group_schedule(
+        self, group_name: str, week_parity: WeekParities
+    ) -> List[LessonsDay]:
         """
         Получает расписание занятий для учебной группы
 
         :param group_name: название учебной группы
+        :param week_parity: четность недели
         :return: расписание занятий
         """
         ...
