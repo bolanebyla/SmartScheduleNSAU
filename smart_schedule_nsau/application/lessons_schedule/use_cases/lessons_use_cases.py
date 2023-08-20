@@ -8,7 +8,7 @@ from ..services import WeekParityDeterminant
 @attr.dataclass(frozen=True)
 class GetCurrentWeekScheduleForGroupUseCase:
     """
-    Получение расписания занятий на неделю для учебной группы
+    Получение расписания занятий на текущую неделю для учебной группы
     """
 
     week_parity_determinant: WeekParityDeterminant
@@ -34,7 +34,7 @@ class GetCurrentWeekScheduleForGroupUseCase:
 @attr.dataclass(frozen=True)
 class GetNextWeekScheduleForGroupUseCase:
     """
-    Получение расписания занятий на неделю для учебной группы
+    Получение расписания занятий на следующую неделю для учебной группы
     """
 
     week_parity_determinant: WeekParityDeterminant
