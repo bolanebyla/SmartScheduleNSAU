@@ -1,10 +1,11 @@
 from telebot.async_telebot import AsyncTeleBot
 
+from smart_schedule_nsau.adapters.database.uow import UnitOfWorkFactory
 from smart_schedule_nsau.application.lessons_schedule import (
     GetCurrentWeekScheduleForGroupUseCase,
+    GetNextWeekScheduleForGroupUseCase,
 )
 
-from ..database.uow import UnitOfWorkFactory
 from .handlers import (
     CommandsHandlers,
     CommonHandlers,
@@ -80,15 +81,17 @@ def register_main_menu_message_handlers(bot: AsyncTeleBot):
 
 def register_schedule_menu_message_handlers(
     bot: AsyncTeleBot,
-    get_current_week_schedule_for_group: GetCurrentWeekScheduleForGroupUseCase,
     uow_factory: UnitOfWorkFactory,
+    get_current_week_schedule_for_group: GetCurrentWeekScheduleForGroupUseCase,
+    get_next_week_schedule_for_group: GetNextWeekScheduleForGroupUseCase,
 ):
     """
     Регистрирует обработчики для кнопок меню "Расписание"
     """
     schedule_handlers = ScheduleHandlers(
-        get_current_week_schedule_for_group=get_current_week_schedule_for_group,
         uow_factory=uow_factory,
+        get_current_week_schedule_for_group=get_current_week_schedule_for_group,
+        get_next_week_schedule_for_group=get_next_week_schedule_for_group,
     )
 
     bot.register_message_handler(
@@ -96,12 +99,18 @@ def register_schedule_menu_message_handlers(
         regexp=ScheduleButtons.CURRENT_WEEK,
         pass_bot=True,
     )
+    bot.register_message_handler(
+        schedule_handlers.show_next_week_schedule,
+        regexp=ScheduleButtons.NEXT_WEEK,
+        pass_bot=True,
+    )
 
 
 def create_bot(
     token: str,
-    get_current_week_schedule_for_group: GetCurrentWeekScheduleForGroupUseCase,
     uow_factory: UnitOfWorkFactory,
+    get_current_week_schedule_for_group: GetCurrentWeekScheduleForGroupUseCase,
+    get_next_week_schedule_for_group: GetNextWeekScheduleForGroupUseCase,
 ) -> AsyncTeleBot:
     bot = AsyncTeleBot(token)
 
@@ -110,8 +119,9 @@ def create_bot(
     register_main_menu_message_handlers(bot=bot)
     register_schedule_menu_message_handlers(
         bot=bot,
-        get_current_week_schedule_for_group=get_current_week_schedule_for_group,
         uow_factory=uow_factory,
+        get_current_week_schedule_for_group=get_current_week_schedule_for_group,
+        get_next_week_schedule_for_group=get_next_week_schedule_for_group,
     )
 
     return bot

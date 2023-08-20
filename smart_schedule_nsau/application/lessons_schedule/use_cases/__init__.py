@@ -1,1 +1,4 @@
-from .lessons_use_cases import GetCurrentWeekScheduleForGroupUseCase
+from .lessons_use_cases import (
+    GetCurrentWeekScheduleForGroupUseCase,
+    GetNextWeekScheduleForGroupUseCase,
+)
