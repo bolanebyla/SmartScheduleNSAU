@@ -11,6 +11,7 @@ from smart_schedule_nsau.adapters.database import UnitOfWorkFactory
 from smart_schedule_nsau.application.lessons_schedule import (
     GetCurrentWeekScheduleForGroupUseCase,
     GetNextWeekScheduleForGroupUseCase,
+    GetScheduleForTodayForGroupUseCase,
     WeekParityDeterminant,
 )
 
@@ -55,6 +56,9 @@ class UseCases:
     get_next_week_schedule_for_group = GetNextWeekScheduleForGroupUseCase(
         week_parity_determinant=Services.week_parity_determinant,
     )
+    get_schedule_for_today_for_group = GetScheduleForTodayForGroupUseCase(
+        week_parity_determinant=Services.week_parity_determinant,
+    )
 
 
 bot = tg_bot.create_bot(
@@ -63,6 +67,7 @@ bot = tg_bot.create_bot(
     get_current_week_schedule_for_group=UseCases.
     get_current_week_schedule_for_group,
     get_next_week_schedule_for_group=UseCases.get_next_week_schedule_for_group,
+    get_schedule_for_today_for_group=UseCases.get_schedule_for_today_for_group,
 )
 
 if __name__ == '__main__':

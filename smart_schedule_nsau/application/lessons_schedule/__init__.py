@@ -5,4 +5,5 @@ from .services import ScheduleCreator, WeekParityDeterminant
 from .use_cases import (
     GetCurrentWeekScheduleForGroupUseCase,
     GetNextWeekScheduleForGroupUseCase,
+    GetScheduleForTodayForGroupUseCase,
 )

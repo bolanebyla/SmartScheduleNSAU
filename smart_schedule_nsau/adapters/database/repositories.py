@@ -96,3 +96,21 @@ class ScheduleRepo(BaseRepositoryAsync, IScheduleRepo):
         ]
 
         return lessons_days
+
+    async def get_group_lessons_day(
+        self, day_number: int, group_name: str, week_parity: WeekParities
+    ) -> LessonsDay:
+        lesson = Lesson(
+            name='Биология',
+            time=time(hour=11, minute=45),
+            teacher_full_name='Петров Петр Петрович',
+            lesson_type=LessonTypes.PRACTICAL,
+            auditorium='444',
+        )
+        lessons_day = LessonsDay(
+            number=2,
+            name='Среда',
+            week_parity=WeekParities.EVEN,
+            lessons=[lesson]
+        )
+        return lessons_day

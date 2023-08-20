@@ -4,6 +4,7 @@ from smart_schedule_nsau.adapters.database.uow import UnitOfWorkFactory
 from smart_schedule_nsau.application.lessons_schedule import (
     GetCurrentWeekScheduleForGroupUseCase,
     GetNextWeekScheduleForGroupUseCase,
+    GetScheduleForTodayForGroupUseCase,
 )
 
 from .handlers import (
@@ -41,11 +42,17 @@ def register_common_handlers(bot: AsyncTeleBot):
     )
 
 
-def register_main_menu_message_handlers(bot: AsyncTeleBot):
+def register_main_menu_message_handlers(
+    bot: AsyncTeleBot, uow_factory: UnitOfWorkFactory,
+    get_schedule_for_today_for_group: GetScheduleForTodayForGroupUseCase
+):
     """
     Регистрирует обработчики для кнопок основного меню
     """
-    main_menu_handler = MainMenuHandlers()
+    main_menu_handler = MainMenuHandlers(
+        uow_factory=uow_factory,
+        get_schedule_for_today_for_group=get_schedule_for_today_for_group,
+    )
 
     bot.register_message_handler(
         main_menu_handler.show_schedule_menu,
@@ -111,12 +118,17 @@ def create_bot(
     uow_factory: UnitOfWorkFactory,
     get_current_week_schedule_for_group: GetCurrentWeekScheduleForGroupUseCase,
     get_next_week_schedule_for_group: GetNextWeekScheduleForGroupUseCase,
+    get_schedule_for_today_for_group: GetScheduleForTodayForGroupUseCase,
 ) -> AsyncTeleBot:
     bot = AsyncTeleBot(token)
 
     register_commands_handlers(bot=bot)
     register_common_handlers(bot=bot)
-    register_main_menu_message_handlers(bot=bot)
+    register_main_menu_message_handlers(
+        bot=bot,
+        uow_factory=uow_factory,
+        get_schedule_for_today_for_group=get_schedule_for_today_for_group,
+    )
     register_schedule_menu_message_handlers(
         bot=bot,
         uow_factory=uow_factory,
