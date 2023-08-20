@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from smart_schedule_nsau.adapters import database, log, settings, tg_bot
-from smart_schedule_nsau.adapters.database.uow import UnitOfWorkFactory
+from smart_schedule_nsau.adapters.database import UnitOfWorkFactory
 from smart_schedule_nsau.application.lessons_schedule import (
     GetCurrentWeekScheduleForGroupUseCase,
     GetNextWeekScheduleForGroupUseCase,
