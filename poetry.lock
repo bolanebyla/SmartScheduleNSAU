@@ -965,18 +965,6 @@ files = [
 ]
 
 [[package]]
-name = "punq"
-version = "0.6.2"
-description = "An IOC Container for Python 3.6+"
-category = "main"
-optional = false
-python-versions = ">=3.6.2,<4.0.0"
-files = [
-    {file = "punq-0.6.2-py3-none-any.whl", hash = "sha256:8d365bdc01038897dfcc0c9bf63bc8910a95afc46e5e427c2a7abbda7144502b"},
-    {file = "punq-0.6.2.tar.gz", hash = "sha256:4d824c92ca640feefb080c1ecdd034e37f79833b3cb88dacac38ed7e048f4dca"},
-]
-
-[[package]]
 name = "pycodestyle"
 version = "2.10.0"
 description = "Python style guide checker"
@@ -1513,4 +1501,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "967db5ab017fda68bbfe2a0fbab12d7b358292a7b26d92ed90301385f6becc74"
+content-hash = "8dea111f2ebe90b30e013cec7c1cd63c8599fbf04330efced5793252fa3b262d"
