@@ -24,28 +24,37 @@ class ScheduleCreator:
 
 
 @attr.dataclass(frozen=True)
+class DatetimeWithTz:
+    """
+    Сервис для получения даты с учетом часового пояса приложения
+    """
+    tz_info: pytz.timezone
+
+    def now(self) -> datetime:
+        now = datetime.now(tz=self.tz_info)
+        return now
+
+
+@attr.dataclass(frozen=True)
 class WeekParityDeterminant:
     """
     Сервис определения четности недели
     """
-    tz_info: pytz.timezone
-
-    def _now(self) -> datetime:
-        now = datetime.now(tz=self.tz_info)
-        return now
+    datetime_with_tz: DatetimeWithTz
 
     def _get_current_week_number(self) -> int:
         """
         Получает номер текущей недели
         """
-        week_number = self._now().isocalendar().week
+        week_number = self.datetime_with_tz.now().isocalendar().week
         return week_number
 
     def _get_next_week_number(self) -> int:
         """
         Получает номер следующей недели
         """
-        week_number = (self._now() + timedelta(days=7)).isocalendar().week
+        week_number = (self.datetime_with_tz.now()
+                       + timedelta(days=7)).isocalendar().week
         return week_number
 
     @staticmethod
