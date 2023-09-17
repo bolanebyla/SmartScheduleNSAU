@@ -53,6 +53,8 @@ class MainMenuHandlers:
             uow=self.uow_factory.create_uow(),
         )
 
+        # TODO: если пар нет, то выводить соответствующее сообщение
+
         mark_as_today = _is_it_today(lessons_day=lessons_day)
         await bot.send_message(
             chat_id=message.chat.id,

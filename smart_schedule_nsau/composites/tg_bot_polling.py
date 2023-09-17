@@ -60,6 +60,7 @@ class UseCases:
     )
     get_schedule_for_today_for_group = GetScheduleForTodayForGroupUseCase(
         week_parity_determinant=Services.week_parity_determinant,
+        datetime_with_tz=Services.datetime_with_tz,
     )
 
 

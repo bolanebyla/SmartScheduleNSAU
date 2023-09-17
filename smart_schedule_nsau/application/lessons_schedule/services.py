@@ -34,6 +34,27 @@ class DatetimeWithTz:
         now = datetime.now(tz=self.tz_info)
         return now
 
+    def get_current_week_number(self) -> int:
+        """
+        Получает номер текущей недели
+        """
+        week_number = self.now().isocalendar().week
+        return week_number
+
+    def get_next_week_number(self) -> int:
+        """
+        Получает номер следующей недели
+        """
+        week_number = (self.now() + timedelta(days=7)).isocalendar().week
+        return week_number
+
+    def get_current_weekday_number(self) -> int:
+        """
+        Получает номер текущего дня недели
+        """
+        weekday_number = self.now().isocalendar().weekday
+        return weekday_number
+
 
 @attr.dataclass(frozen=True)
 class WeekParityDeterminant:
@@ -41,21 +62,6 @@ class WeekParityDeterminant:
     Сервис определения четности недели
     """
     datetime_with_tz: DatetimeWithTz
-
-    def _get_current_week_number(self) -> int:
-        """
-        Получает номер текущей недели
-        """
-        week_number = self.datetime_with_tz.now().isocalendar().week
-        return week_number
-
-    def _get_next_week_number(self) -> int:
-        """
-        Получает номер следующей недели
-        """
-        week_number = (self.datetime_with_tz.now()
-                       + timedelta(days=7)).isocalendar().week
-        return week_number
 
     @staticmethod
     def _determine_parity_by_week_number(week_number: int) -> WeekParities:
@@ -72,7 +78,7 @@ class WeekParityDeterminant:
         """
         Получает четность текущей недели
         """
-        week_number = self._get_current_week_number()
+        week_number = self.datetime_with_tz.get_current_week_number()
         week_parity = self._determine_parity_by_week_number(
             week_number=week_number,
         )
@@ -82,7 +88,7 @@ class WeekParityDeterminant:
         """
         Получает четность следующей недели
         """
-        week_number = self._get_next_week_number()
+        week_number = self.datetime_with_tz.get_next_week_number()
         week_parity = self._determine_parity_by_week_number(
             week_number=week_number,
         )

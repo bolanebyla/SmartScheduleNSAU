@@ -12,6 +12,16 @@ from smart_schedule_nsau.application.lessons_schedule import (
     WeekParities,
 )
 
+_DAY_LESSONS = {
+    1: 'Понедельник',
+    2: 'Вторник',
+    3: 'Среда',
+    4: 'Четверг',
+    5: 'Пятница',
+    6: 'Суббота',
+    7: 'Воскресенье',
+}
+
 
 @component
 class BaseRepositoryAsync:
@@ -108,8 +118,8 @@ class ScheduleRepo(BaseRepositoryAsync, IScheduleRepo):
             auditorium='444',
         )
         lessons_day = LessonsDay(
-            number=2,
-            name='Среда',
+            number=day_number,
+            name=_DAY_LESSONS[day_number],
             week_parity=WeekParities.EVEN,
             lessons=[lesson]
         )
