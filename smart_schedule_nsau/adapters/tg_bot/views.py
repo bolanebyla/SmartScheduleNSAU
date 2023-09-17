@@ -19,6 +19,15 @@ class BaseMessageTextView(ABC):
         return self.to_str()
 
 
+class InDevelopmentMessageTextView(BaseMessageTextView):
+    """
+    Заглушка для функций, которые ещё находятся в разработке
+    """
+
+    def to_str(self) -> str:
+        return '🔧 В разработке 🔧'
+
+
 class LessonView(BaseMessageTextView):
     """
     Представление занятия (пары) в формате для отображения

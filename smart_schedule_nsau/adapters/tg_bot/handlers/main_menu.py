@@ -8,8 +8,8 @@ from smart_schedule_nsau.application.lessons_schedule import (
     GetScheduleForTomorrowForGroupUseCase,
 )
 
-from ..keyboards import MainMenuButtons, ScheduleKeyboard
-from ..views import LessonsDayView
+from ..keyboards import ScheduleKeyboard
+from ..views import InDevelopmentMessageTextView, LessonsDayView
 
 
 @attr.dataclass(frozen=True)
@@ -37,7 +37,7 @@ class MainMenuHandlers:
         """
         await bot.send_message(
             chat_id=message.chat.id,
-            text=MainMenuButtons.NEAREST_LESSON,
+            text=InDevelopmentMessageTextView().to_str(),
         )
 
     async def show_schedule_for_today_menu(
@@ -91,7 +91,7 @@ class MainMenuHandlers:
         """
         await bot.send_message(
             chat_id=message.chat.id,
-            text=MainMenuButtons.SEARCH,
+            text=InDevelopmentMessageTextView().to_str(),
         )
 
     async def show_more_info_menu(self, message: Message, bot: AsyncTeleBot):
@@ -100,5 +100,5 @@ class MainMenuHandlers:
         """
         await bot.send_message(
             chat_id=message.chat.id,
-            text=MainMenuButtons.MORE_INFO,
+            text=InDevelopmentMessageTextView().to_str(),
         )
