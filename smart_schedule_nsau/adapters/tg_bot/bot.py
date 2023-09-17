@@ -5,6 +5,7 @@ from smart_schedule_nsau.application.lessons_schedule import (
     GetCurrentWeekScheduleForGroupUseCase,
     GetNextWeekScheduleForGroupUseCase,
     GetScheduleForTodayForGroupUseCase,
+    GetScheduleForTomorrowForGroupUseCase,
 )
 
 from .handlers import (
@@ -43,8 +44,10 @@ def register_common_handlers(bot: AsyncTeleBot):
 
 
 def register_main_menu_message_handlers(
-    bot: AsyncTeleBot, uow_factory: UnitOfWorkFactory,
-    get_schedule_for_today_for_group: GetScheduleForTodayForGroupUseCase
+    bot: AsyncTeleBot,
+    uow_factory: UnitOfWorkFactory,
+    get_schedule_for_today_for_group: GetScheduleForTodayForGroupUseCase,
+    get_schedule_for_tomorrow_for_group: GetScheduleForTomorrowForGroupUseCase,
 ):
     """
     Регистрирует обработчики для кнопок основного меню
@@ -52,6 +55,7 @@ def register_main_menu_message_handlers(
     main_menu_handler = MainMenuHandlers(
         uow_factory=uow_factory,
         get_schedule_for_today_for_group=get_schedule_for_today_for_group,
+        get_schedule_for_tomorrow_for_group=get_schedule_for_tomorrow_for_group,
     )
 
     bot.register_message_handler(
@@ -119,6 +123,7 @@ def create_bot(
     get_current_week_schedule_for_group: GetCurrentWeekScheduleForGroupUseCase,
     get_next_week_schedule_for_group: GetNextWeekScheduleForGroupUseCase,
     get_schedule_for_today_for_group: GetScheduleForTodayForGroupUseCase,
+    get_schedule_for_tomorrow_for_group: GetScheduleForTomorrowForGroupUseCase,
 ) -> AsyncTeleBot:
     bot = AsyncTeleBot(token)
 
@@ -128,6 +133,7 @@ def create_bot(
         bot=bot,
         uow_factory=uow_factory,
         get_schedule_for_today_for_group=get_schedule_for_today_for_group,
+        get_schedule_for_tomorrow_for_group=get_schedule_for_tomorrow_for_group,
     )
     register_schedule_menu_message_handlers(
         bot=bot,

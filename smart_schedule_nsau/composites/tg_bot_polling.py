@@ -13,6 +13,7 @@ from smart_schedule_nsau.application.lessons_schedule import (
     GetCurrentWeekScheduleForGroupUseCase,
     GetNextWeekScheduleForGroupUseCase,
     GetScheduleForTodayForGroupUseCase,
+    GetScheduleForTomorrowForGroupUseCase,
     WeekParityDeterminant,
 )
 
@@ -62,6 +63,10 @@ class UseCases:
         week_parity_determinant=Services.week_parity_determinant,
         datetime_with_tz=Services.datetime_with_tz,
     )
+    get_schedule_for_tomorrow_for_group = GetScheduleForTomorrowForGroupUseCase(
+        week_parity_determinant=Services.week_parity_determinant,
+        datetime_with_tz=Services.datetime_with_tz,
+    )
 
 
 bot = tg_bot.create_bot(
@@ -71,6 +76,8 @@ bot = tg_bot.create_bot(
     get_current_week_schedule_for_group,
     get_next_week_schedule_for_group=UseCases.get_next_week_schedule_for_group,
     get_schedule_for_today_for_group=UseCases.get_schedule_for_today_for_group,
+    get_schedule_for_tomorrow_for_group=UseCases.
+    get_schedule_for_tomorrow_for_group,
 )
 
 if __name__ == '__main__':

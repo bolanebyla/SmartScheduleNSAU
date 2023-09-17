@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import attr
 
 from .. import LessonsDay
@@ -72,10 +74,36 @@ class GetScheduleForTodayForGroupUseCase:
     ) -> LessonsDay:
         async with uow:
             week_parity = self.week_parity_determinant.get_next_week_parity()
-            day_number = self.datetime_with_tz.get_current_weekday_number()
+            day_number = self.datetime_with_tz.now().isocalendar().weekday
 
             lessons_day = await uow.schedule_repo.get_group_lessons_day(
                 day_number=day_number,
+                group_name=group_name,
+                week_parity=week_parity,
+            )
+            return lessons_day
+
+
+@attr.dataclass(frozen=True)
+class GetScheduleForTomorrowForGroupUseCase:
+    """
+    Получение расписания занятий на завтра для учебной группы
+    """
+
+    week_parity_determinant: WeekParityDeterminant
+    datetime_with_tz: DatetimeWithTz
+
+    async def execute(
+        self, group_name: str, uow: IScheduleUnitOfWork
+    ) -> LessonsDay:
+        async with uow:
+            week_parity = self.week_parity_determinant.get_next_week_parity()
+            tomorrow_day_number = (
+                self.datetime_with_tz.now() + timedelta(days=1)
+            ).isocalendar().weekday
+
+            lessons_day = await uow.schedule_repo.get_group_lessons_day(
+                day_number=tomorrow_day_number,
                 group_name=group_name,
                 week_parity=week_parity,
             )

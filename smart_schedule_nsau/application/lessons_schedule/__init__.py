@@ -6,4 +6,5 @@ from .use_cases import (
     GetCurrentWeekScheduleForGroupUseCase,
     GetNextWeekScheduleForGroupUseCase,
     GetScheduleForTodayForGroupUseCase,
+    GetScheduleForTomorrowForGroupUseCase,
 )
