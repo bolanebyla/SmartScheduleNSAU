@@ -36,16 +36,4 @@ class StudyGroup:
     Учебная группа
     """
     name: str
-    schedule_file_url: str
     course: int
-    lessons_days: List[LessonsDay] = attr.ib(factory=list)
-
-
-@attr.dataclass
-class Faculty:
-    """
-    Факультет
-    """
-    id: str
-    name: str
-    study_groups: List[StudyGroup] = attr.ib(factory=list)
