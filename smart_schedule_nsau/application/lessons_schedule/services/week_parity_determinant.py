@@ -1,21 +1,9 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import attr
-import pytz
 
-from . import WeekParities
-
-
-@attr.dataclass(frozen=True)
-class DatetimeWithTz:
-    """
-    Сервис для получения даты с учетом часового пояса приложения
-    """
-    tz_info: pytz.timezone
-
-    def now(self) -> datetime:
-        now = datetime.now(tz=self.tz_info)
-        return now
+from ..enums import WeekParities
+from .datetime_with_tz import DatetimeWithTz
 
 
 @attr.dataclass(frozen=True)
