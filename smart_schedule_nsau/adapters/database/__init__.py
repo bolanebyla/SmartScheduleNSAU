@@ -1,13 +1,12 @@
 from .mapping import mapper
+from .meta import lessons_schedule_metadata
 from .repositories import ScheduleRepo
 from .settings import Settings
-from .tables import metadata
 from .uow import UnitOfWorkFactory
 
 __all__ = (
     'mapper',
     'Settings',
-    'metadata',
     'ScheduleRepo',
     'UnitOfWorkFactory',
 )

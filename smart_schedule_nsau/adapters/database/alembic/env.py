@@ -5,7 +5,7 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from smart_schedule_nsau.adapters.database.tables import metadata
+from smart_schedule_nsau.adapters.database import lessons_schedule_metadata
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -15,7 +15,7 @@ config = context.config
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = metadata
+target_metadata = lessons_schedule_metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -39,7 +39,7 @@ def run_migrations_offline():
     context.configure(
         url=url,
         include_schemas=True,
-        version_table_schema=target_metadata.schema,
+        version_table_schema=target_metadata.lessons_schedule_schema,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
