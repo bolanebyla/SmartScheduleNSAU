@@ -67,9 +67,9 @@ class LessonsDayView(BaseMessageTextView):
     def to_str(self) -> str:
         # день недели
         if self._mark_as_today:
-            lessons_view_str = f'🍏{self._lessons_day.name.upper()}🍏'
+            lessons_view_str = f'🍏{self._lessons_day.get_name().upper()}🍏'
         else:
-            lessons_view_str = f'🍎{self._lessons_day.name.upper()}🍎'
+            lessons_view_str = f'🍎{self._lessons_day.get_name().upper()}🍎'
 
         lessons_view_str += f'\n{LESSONS_SEPARATOR}\n'
 
