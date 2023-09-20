@@ -6,21 +6,6 @@ from smart_schedule_nsau.application.lessons_schedule import (
 )
 
 
-class BaseUnitOfWork(Protocol):
-
-    async def __aenter__(self):
-        return self
-
-    async def __aexit__(self, *args):
-        await self.rollback()
-
-    async def commit(self):
-        ...
-
-    async def rollback(self):
-        ...
-
-
 class IScheduleRepo(Protocol):
 
     async def get_group_schedule(
@@ -47,7 +32,3 @@ class IScheduleRepo(Protocol):
         :param week_parity: четность недели
         :return: расписание занятий на день
         """
-
-
-class IScheduleUnitOfWork(BaseUnitOfWork, Protocol):
-    schedule_repo: IScheduleRepo
