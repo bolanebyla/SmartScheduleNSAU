@@ -10,7 +10,4 @@ naming_convention = {
 CASCADE = 'CASCADE'
 
 lessons_schedule_schema = 'lessons_schedule'
-lessons_schedule_metadata = MetaData(
-    naming_convention=naming_convention,
-    schema=lessons_schedule_schema,
-)
+metadata = MetaData(naming_convention=naming_convention)
