@@ -80,22 +80,15 @@ class ScheduleRepo(BaseRepositoryAsync, IScheduleRepo):
 
         lessons_day_1 = LessonsDay(
             number=1,
-            name='Понедельник',
             week_parity=WeekParities.EVEN,
             lessons=[lesson_1, lesson_3]
         )
 
         lessons_day_2 = LessonsDay(
-            number=2,
-            name='Вторник',
-            week_parity=WeekParities.ODD,
-            lessons=[lesson_2]
+            number=2, week_parity=WeekParities.ODD, lessons=[lesson_2]
         )
         lessons_day_3 = LessonsDay(
-            number=2,
-            name='Среда',
-            week_parity=WeekParities.EVEN,
-            lessons=[lesson_4]
+            number=2, week_parity=WeekParities.EVEN, lessons=[lesson_4]
         )
 
         lessons_days = [lessons_day_1, lessons_day_2, lessons_day_3]
@@ -118,9 +111,6 @@ class ScheduleRepo(BaseRepositoryAsync, IScheduleRepo):
             auditorium='444',
         )
         lessons_day = LessonsDay(
-            number=day_number,
-            name=_DAY_LESSONS[day_number],
-            week_parity=WeekParities.EVEN,
-            lessons=[lesson]
+            number=day_number, week_parity=WeekParities.EVEN, lessons=[lesson]
         )
         return lessons_day

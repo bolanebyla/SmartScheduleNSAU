@@ -1,10 +1,16 @@
 from sqlalchemy.orm import registry
 
+from smart_schedule_nsau.application.lessons_schedule import LessonsDay
+
+from .tables.lessons_schedule import lessons_days
+
 # from smart_schedule_nsau.application.lessons_schedule import entities
 #
 # from . import tables
 
 mapper = registry()
+
+mapper.map_imperatively(LessonsDay, lessons_days)
 #
 # mapper.map_imperatively(entities.LessonSequence, tables.lesson_sequences)
 #
