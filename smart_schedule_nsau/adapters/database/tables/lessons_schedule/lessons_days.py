@@ -19,7 +19,7 @@ WeekParitiesEnum = Enum(
 lessons_days = Table(
     'lessons_days',
     metadata,
-    Column('id', Integer(), primary_key=True),
+    Column('id', Integer, primary_key=True),
     Column('number', Integer, nullable=False),
     Column('week_parity', WeekParitiesEnum, nullable=False),
     Index('idx_lessons_days_number_week_parity', 'number', 'week_parity'),

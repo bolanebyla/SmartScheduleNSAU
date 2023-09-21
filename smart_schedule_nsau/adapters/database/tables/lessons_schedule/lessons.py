@@ -1,47 +1,39 @@
-# from sqlalchemy import Column, Enum, ForeignKey, Integer, String, Table
-#
-# from smart_schedule_nsau.adapters.database.meta import (
-#     CASCADE,
-#     lessons_schedule_schema,
-#     metadata,
-# )
-# from smart_schedule_nsau.application.lessons_schedule import (
-#     LessonTypes,
-#     WeekParities,
-# )
+from sqlalchemy import Column, Enum, ForeignKey, Integer, String, Table, Time
 
-# WEEK_PARITIES_ENUM = Enum(
-#     WeekParities,
-#     name='week_parities',
-#     metadata=lessons_schedule_metadata,
-#     create_type=False,
-#     validate_strings=True,
-# )
-#
-# LESSON_TYPES_ENUM = Enum(
-#     LessonTypes,
-#     name='lesson_types',
-#     metadata=lessons_schedule_metadata,
-#     create_type=False,
-#     validate_strings=True,
-# )
+from smart_schedule_nsau.adapters.database.meta import (
+    CASCADE,
+    lessons_schedule_schema,
+    metadata,
+)
+from smart_schedule_nsau.application.lessons_schedule import LessonTypes
 
-# TODO: добавить primary_key
-# lessons = Table(
-#     'lessons',
-#     lessons_schedule_metadata,
-#     Column('name', String),
-#     Column('week_day_number', Integer),
-#     Column('sequence_number', Integer, nullable=False),
-#     Column('week_parity', WEEK_PARITIES_ENUM),
-#     Column('teacher_full_name', String),
-#     Column('lesson_type', LESSON_TYPES_ENUM),
-#     Column('auditorium', String),
-#     Column(
-#         'study_group_name',
-#         ForeignKey('study_groups.name', ondelete=CASCADE),
-#         nullable=False
-#     ),
-#     Column('subgroup', String, nullable=True),
-#     #schema=lessons_schedule_schema,
-# )
+LessonTypesEnum = Enum(
+    LessonTypes,
+    values_callable=lambda x: [e.value for e in x],
+    name='lesson_types',
+    create_constraint=True,
+    validate_strings=True,
+    metadata=metadata,
+    schema=lessons_schedule_schema,
+)
+
+# TODO: сделать мапинг на сущность
+
+lessons = Table(
+    'lessons',
+    metadata,
+    Column('id', Integer, primary_key=True),
+    Column(
+        'lessons_day_id',
+        Integer,
+        ForeignKey('lessons_days.id', ondelete=CASCADE),
+        nullable=False,
+    ),
+    Column('name', String, nullable=False, index=True),
+    Column('time', Time(timezone=True), nullable=False, index=True),
+    Column('teacher_full_name', String, nullable=False),
+    Column('lesson_type', LessonTypesEnum, nullable=False),
+    Column('auditorium', String, nullable=True),
+    Column('comment', String, nullable=True),
+    schema=lessons_schedule_schema,
+)
