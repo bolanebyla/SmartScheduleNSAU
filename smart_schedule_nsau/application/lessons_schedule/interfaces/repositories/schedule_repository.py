@@ -1,4 +1,4 @@
-from typing import List, Protocol
+from typing import List, Optional, Protocol
 
 from smart_schedule_nsau.application.lessons_schedule import (
     LessonsDay,
@@ -8,6 +8,7 @@ from smart_schedule_nsau.application.lessons_schedule import (
 
 class IScheduleRepo(Protocol):
 
+    # TODO: добавить в запрос время действия расписания
     async def get_group_schedule(
         self, group_name: str, week_parity: WeekParities
     ) -> List[LessonsDay]:
@@ -20,9 +21,10 @@ class IScheduleRepo(Protocol):
         """
         ...
 
+    # TODO: добавить в запрос время действия расписания
     async def get_group_lessons_day(
         self, day_number: int, group_name: str, week_parity: WeekParities
-    ) -> LessonsDay:
+    ) -> Optional[LessonsDay]:
         """
         Получает расписание занятий на день (учебный день)
         по номеру дня для группы

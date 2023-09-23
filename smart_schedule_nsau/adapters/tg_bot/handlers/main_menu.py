@@ -54,15 +54,19 @@ class MainMenuHandlers:
             uow=self.uow_factory.create_uow(),
         )
 
-        # TODO: если пар нет, то выводить соответствующее сообщение
-
-        await bot.send_message(
-            chat_id=message.chat.id,
-            text=LessonsDayView(
-                lessons_day=lessons_day,
-                mark_as_today=True,
-            ).to_str(),
-        )
+        if lessons_day is not None:
+            await bot.send_message(
+                chat_id=message.chat.id,
+                text=LessonsDayView(
+                    lessons_day=lessons_day,
+                    mark_as_today=True,
+                ).to_str(),
+            )
+        else:
+            await bot.send_message(
+                chat_id=message.chat.id,
+                text='Сегодня пар нет 😉',
+            )
 
     async def show_schedule_for_tomorrow_menu(
         self, message: Message, bot: AsyncTeleBot
@@ -78,12 +82,16 @@ class MainMenuHandlers:
             uow=self.uow_factory.create_uow(),
         )
 
-        # TODO: если пар нет, то выводить соответствующее сообщение
-
-        await bot.send_message(
-            chat_id=message.chat.id,
-            text=LessonsDayView(lessons_day=lessons_day, ).to_str(),
-        )
+        if lessons_day is not None:
+            await bot.send_message(
+                chat_id=message.chat.id,
+                text=LessonsDayView(lessons_day=lessons_day, ).to_str(),
+            )
+        else:
+            await bot.send_message(
+                chat_id=message.chat.id,
+                text='Завтра пар нет 😉',
+            )
 
     async def show_search_menu(self, message: Message, bot: AsyncTeleBot):
         """
