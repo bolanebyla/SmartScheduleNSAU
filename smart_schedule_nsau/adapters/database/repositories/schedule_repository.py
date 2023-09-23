@@ -1,8 +1,7 @@
 from datetime import time
 from typing import List
 
-from classic.components import component
-from sqlalchemy.ext.asyncio import AsyncSession
+import attr
 
 from smart_schedule_nsau.application.lessons_schedule import (
     IScheduleRepo,
@@ -12,34 +11,10 @@ from smart_schedule_nsau.application.lessons_schedule import (
     WeekParities,
 )
 
-_DAY_LESSONS = {
-    1: 'Понедельник',
-    2: 'Вторник',
-    3: 'Среда',
-    4: 'Четверг',
-    5: 'Пятница',
-    6: 'Суббота',
-    7: 'Воскресенье',
-}
+from .base import BaseRepositoryAsync
 
 
-@component
-class BaseRepositoryAsync:
-    session: AsyncSession
-
-
-# @component
-# class ScheduleChangeRepo(BaseRepositoryAsync, IScheduleChangeRepo):
-#
-#     async def delete_schedule(self):
-#         query = delete(Faculty)
-#         await self.session.execute(query)
-#
-#     def create_schedule(self, faculties: List[Faculty]):
-#         self.session.add_all(faculties)
-
-
-@component
+@attr.dataclass(frozen=True)
 class ScheduleRepo(BaseRepositoryAsync, IScheduleRepo):
 
     async def get_group_schedule(
