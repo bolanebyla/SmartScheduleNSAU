@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 import attr
 
@@ -23,6 +23,7 @@ class LessonsDay:
     """
     number: int
     week_parity: WeekParities
+    id: Optional[int] = None
     lessons: List[Lesson] = attr.ib(factory=list)
 
     def get_name(self) -> str:

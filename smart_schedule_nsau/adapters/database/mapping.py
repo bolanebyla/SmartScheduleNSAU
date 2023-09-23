@@ -1,47 +1,19 @@
-from sqlalchemy.orm import registry
+from sqlalchemy.orm import registry, relationship
 
-from smart_schedule_nsau.application.lessons_schedule import LessonsDay
+from smart_schedule_nsau.application.lessons_schedule import Lesson, LessonsDay
 
-from .tables.lessons_schedule import lessons_days
-
-# from smart_schedule_nsau.application.lessons_schedule import entities
-#
-# from . import tables
+from .tables import lessons, lessons_days
 
 mapper = registry()
 
-mapper.map_imperatively(LessonsDay, lessons_days)
-#
-# mapper.map_imperatively(entities.LessonSequence, tables.lesson_sequences)
-#
-# mapper.map_imperatively(
-#     entities.Lesson,
-#     tables.lessons,
-#     # properties={
-#     #     'sequence': relationship(
-#     #         entities.LessonSequence,
-#     #         uselist=False,
-#     #         lazy='joined',
-#     #     )
-#     # }
-# )
-#
-# mapper.map_imperatively(
-#     entities.StudyGroup,
-#     tables.study_groups,
-#     properties={
-#         'lessons': relationship(
-#             entities.Lesson, lazy='subquery', cascade='all, delete-orphan'
-#         )
-#     }
-# )
-#
-# mapper.map_imperatively(
-#     entities.Faculty,
-#     tables.faculties,
-#     properties={
-#         'study_groups': relationship(
-#             entities.StudyGroup, lazy='subquery', cascade='all, delete-orphan'
-#         )
-#     }
-# )
+mapper.map_imperatively(Lesson, lessons)
+
+mapper.map_imperatively(
+    LessonsDay,
+    lessons_days,
+    properties={
+        'lessons': relationship(
+            Lesson, lazy='subquery', cascade='all, delete-orphan'
+        )
+    }
+)

@@ -7,6 +7,8 @@ from smart_schedule_nsau.adapters.database.meta import (
 )
 from smart_schedule_nsau.application.lessons_schedule import LessonTypes
 
+from .lessons_days import lessons_days
+
 LessonTypesEnum = Enum(
     LessonTypes,
     values_callable=lambda x: [e.value for e in x],
@@ -26,7 +28,7 @@ lessons = Table(
     Column(
         'lessons_day_id',
         Integer,
-        ForeignKey('lessons_days.id', ondelete=CASCADE),
+        ForeignKey(lessons_days.c.id, ondelete=CASCADE),
         nullable=False,
     ),
     Column('name', String, nullable=False, index=True),
