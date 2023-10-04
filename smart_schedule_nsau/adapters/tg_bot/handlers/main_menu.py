@@ -49,9 +49,10 @@ class MainMenuHandlers:
         # TODO: брать данные у пользователя
         group_name = '123-1'
 
+        uow = self.uow_factory.create_uow()
         lessons_day = await self.get_schedule_for_today_for_group.execute(
             group_name=group_name,
-            uow=self.uow_factory.create_uow(),
+            uow=uow,
         )
 
         if lessons_day is not None:

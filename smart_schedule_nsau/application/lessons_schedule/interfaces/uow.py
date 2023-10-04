@@ -8,8 +8,11 @@ class BaseUnitOfWork(Protocol):
     async def __aenter__(self):
         return self
 
-    async def __aexit__(self, *args):
-        await self.rollback()
+    async def __aexit__(self, exn_type, exn_value, traceback):
+        if exn_type is None:
+            await self.commit()
+        else:
+            await self.rollback()
 
     async def commit(self):
         ...
