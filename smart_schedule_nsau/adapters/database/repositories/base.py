@@ -1,7 +1,7 @@
-from classic.components import component
+import attr
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-@component
+@attr.dataclass(frozen=True)
 class BaseRepositoryAsync:
     session: AsyncSession

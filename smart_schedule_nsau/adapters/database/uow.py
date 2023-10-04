@@ -1,4 +1,4 @@
-from classic.components import component
+import attr
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 
@@ -7,7 +7,7 @@ from smart_schedule_nsau.application.lessons_schedule import IScheduleUnitOfWork
 from . import repositories
 
 
-@component
+@attr.dataclass
 class UnitOfWork(IScheduleUnitOfWork):
     session_factory: sessionmaker
 
@@ -27,7 +27,7 @@ class UnitOfWork(IScheduleUnitOfWork):
         await self.session.rollback()
 
 
-@component
+@attr.dataclass(frozen=True)
 class UnitOfWorkFactory:
     session_factory: sessionmaker
 
