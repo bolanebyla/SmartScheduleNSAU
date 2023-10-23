@@ -4,7 +4,7 @@
 import asyncio
 
 from smart_schedule_nsau.adapters import database, log, settings, tg_bot
-from smart_schedule_nsau.containers.tg_bot_container import Container
+from smart_schedule_nsau.containers.tg_bot_container import MainContainer
 
 # from sqlalchemy.ext.asyncio import (
 #     AsyncSession,
@@ -84,7 +84,7 @@ bot = tg_bot.create_bot(
     # get_schedule_for_tomorrow_for_group,
 )
 
-container = Container()
+container = MainContainer()
 container.config.from_dict(
     {
         'db': {

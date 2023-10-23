@@ -1,1 +1,1 @@
-from .tg_bot_container import Container, DbContainer, Services, UoWContainer
+from .tg_bot_container import MainContainer

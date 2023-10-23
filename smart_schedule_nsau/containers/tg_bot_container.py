@@ -39,16 +39,12 @@ class UoWContainer(containers.DeclarativeContainer):
     )
 
 
-class Services(containers.DeclarativeContainer):
-    wiring_config = containers.WiringConfiguration(
-        packages=['smart_schedule_nsau.adapters.tg_bot.handlers'],
-    )
-
+class ServicesContainer(containers.DeclarativeContainer):
     config = providers.Configuration(strict=True)
 
     datetime_with_tz = providers.Factory(
         DatetimeWithTz,
-        tz_info=config.tz_info,
+        tz_info=config.tz_info.required(),
     )
 
     week_parity_determinant = providers.Factory(
@@ -56,29 +52,38 @@ class Services(containers.DeclarativeContainer):
         datetime_with_tz=datetime_with_tz,
     )
 
+
+class UseCasesContainer(containers.DeclarativeContainer):
+    services = providers.DependenciesContainer()
+
     get_schedule_for_today_for_group = providers.Factory(
         GetScheduleForTodayForGroupUseCase,
-        week_parity_determinant=week_parity_determinant,
-        datetime_with_tz=datetime_with_tz,
+        week_parity_determinant=services.week_parity_determinant,
+        datetime_with_tz=services.datetime_with_tz,
     )
 
 
-class Container(containers.DeclarativeContainer):
+class MainContainer(containers.DeclarativeContainer):
     wiring_config = containers.WiringConfiguration(
         packages=['smart_schedule_nsau.adapters.tg_bot.handlers'],
     )
     config = providers.Configuration()
 
-    db = providers.Container(
+    db: DbContainer = providers.Container(
         DbContainer,
         config=config.db,
     )
 
-    uow = providers.Container(
+    uow: UoWContainer = providers.Container(
         UoWContainer,
         db=db,
     )
-    services = providers.Container(
-        Services,
+    services: ServicesContainer = providers.Container(
+        ServicesContainer,
         config=config.services,
+    )
+
+    use_cases: UseCasesContainer = providers.Container(
+        UseCasesContainer,
+        services=services,
     )

@@ -8,7 +8,7 @@ from smart_schedule_nsau.application.lessons_schedule import (
     GetScheduleForTodayForGroupUseCase,
     GetScheduleForTomorrowForGroupUseCase,
 )
-from smart_schedule_nsau.containers import Container
+from smart_schedule_nsau.containers import MainContainer
 
 from ..keyboards import ScheduleKeyboard
 from ..views import InDevelopmentMessageTextView, LessonsDayView
@@ -47,10 +47,10 @@ class MainMenuHandlers:
 async def show_schedule_for_today_menu(
     message: Message,
     bot: AsyncTeleBot,
-    uow_factory: UnitOfWorkFactory = Provide[Container.uow.uow_factory],
+    uow_factory: UnitOfWorkFactory = Provide[MainContainer.uow.uow_factory],
     get_schedule_for_today_for_group:
     GetScheduleForTodayForGroupUseCase = Provide[
-        Container.services.get_schedule_for_today_for_group]
+        MainContainer.use_cases.get_schedule_for_today_for_group]
 ):
     """
     Показывает меню "Расписание на сегодня"
