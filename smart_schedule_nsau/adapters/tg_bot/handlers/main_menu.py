@@ -1,4 +1,5 @@
 import attr
+from dependency_injector.wiring import Provide, inject
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message
 
@@ -7,6 +8,7 @@ from smart_schedule_nsau.application.lessons_schedule import (
     GetScheduleForTodayForGroupUseCase,
     GetScheduleForTomorrowForGroupUseCase,
 )
+from smart_schedule_nsau.containers import Container
 
 from ..keyboards import ScheduleKeyboard
 from ..views import InDevelopmentMessageTextView, LessonsDayView
@@ -40,74 +42,81 @@ class MainMenuHandlers:
             text=InDevelopmentMessageTextView().to_str(),
         )
 
-    async def show_schedule_for_today_menu(
-        self, message: Message, bot: AsyncTeleBot
-    ):
-        """
-        Показывает меню "Расписание на сегодня"
-        """
-        # TODO: брать данные у пользователя
-        group_name = '123-1'
 
-        uow = self.uow_factory.create_uow()
-        lessons_day = await self.get_schedule_for_today_for_group.execute(
-            group_name=group_name,
-            uow=uow,
-        )
+@inject
+async def show_schedule_for_today_menu(
+    message: Message,
+    bot: AsyncTeleBot,
+    uow_factory: UnitOfWorkFactory = Provide[Container.uow.uow_factory],
+    get_schedule_for_today_for_group:
+    GetScheduleForTodayForGroupUseCase = Provide[
+        Container.services.get_schedule_for_today_for_group]
+):
+    """
+    Показывает меню "Расписание на сегодня"
+    """
+    # TODO: брать данные у пользователя
+    group_name = '123-1'
 
-        if lessons_day is not None:
-            await bot.send_message(
-                chat_id=message.chat.id,
-                text=LessonsDayView(
-                    lessons_day=lessons_day,
-                    mark_as_today=True,
-                ).to_str(),
-            )
-        else:
-            await bot.send_message(
-                chat_id=message.chat.id,
-                text='Сегодня пар нет 😉',
-            )
+    uow = uow_factory.create_uow()
+    lessons_day = await get_schedule_for_today_for_group.execute(
+        group_name=group_name,
+        uow=uow,
+    )
 
-    async def show_schedule_for_tomorrow_menu(
-        self, message: Message, bot: AsyncTeleBot
-    ):
-        """
-        Показывает меню "Расписание на завтра"
-        """
-        # TODO: брать данные у пользователя
-        group_name = '123-1'
-
-        lessons_day = await self.get_schedule_for_tomorrow_for_group.execute(
-            group_name=group_name,
-            uow=self.uow_factory.create_uow(),
-        )
-
-        if lessons_day is not None:
-            await bot.send_message(
-                chat_id=message.chat.id,
-                text=LessonsDayView(lessons_day=lessons_day, ).to_str(),
-            )
-        else:
-            await bot.send_message(
-                chat_id=message.chat.id,
-                text='Завтра пар нет 😉',
-            )
-
-    async def show_search_menu(self, message: Message, bot: AsyncTeleBot):
-        """
-        Показывает меню "Поиск"
-        """
+    if lessons_day is not None:
         await bot.send_message(
             chat_id=message.chat.id,
-            text=InDevelopmentMessageTextView().to_str(),
+            text=LessonsDayView(
+                lessons_day=lessons_day,
+                mark_as_today=True,
+            ).to_str(),
         )
-
-    async def show_more_info_menu(self, message: Message, bot: AsyncTeleBot):
-        """
-        Показывает меню "Другое"
-        """
+    else:
         await bot.send_message(
             chat_id=message.chat.id,
-            text=InDevelopmentMessageTextView().to_str(),
+            text='Сегодня пар нет 😉',
         )
+    #
+    # async def show_schedule_for_tomorrow_menu(
+    #     self, message: Message, bot: AsyncTeleBot
+    # ):
+    #     """
+    #     Показывает меню "Расписание на завтра"
+    #     """
+    #     # TODO: брать данные у пользователя
+    #     group_name = '123-1'
+    #
+    #     lessons_day = await self.get_schedule_for_tomorrow_for_group.execute(
+    #         group_name=group_name,
+    #         uow=self.uow_factory.create_uow(),
+    #     )
+    #
+    #     if lessons_day is not None:
+    #         await bot.send_message(
+    #             chat_id=message.chat.id,
+    #             text=LessonsDayView(lessons_day=lessons_day, ).to_str(),
+    #         )
+    #     else:
+    #         await bot.send_message(
+    #             chat_id=message.chat.id,
+    #             text='Завтра пар нет 😉',
+    #         )
+    #
+    # async def show_search_menu(self, message: Message, bot: AsyncTeleBot):
+    #     """
+    #     Показывает меню "Поиск"
+    #     """
+    #     await bot.send_message(
+    #         chat_id=message.chat.id,
+    #         text=InDevelopmentMessageTextView().to_str(),
+    #     )
+    #
+    # async def show_more_info_menu(self, message: Message, bot: AsyncTeleBot):
+    #     """
+    #     Показывает меню "Другое"
+    #     """
+    #     await bot.send_message(
+    #         chat_id=message.chat.id,
+    #         text=InDevelopmentMessageTextView().to_str(),
+    #     )

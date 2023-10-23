@@ -13,6 +13,7 @@ from .handlers import (
     CommonHandlers,
     MainMenuHandlers,
     ScheduleHandlers,
+    main_menu,
 )
 from .keyboards import MAIN_MENU_KEYWORD, MainMenuButtons, ScheduleButtons
 
@@ -117,29 +118,17 @@ def register_schedule_menu_message_handlers(
     )
 
 
-def create_bot(
-    token: str,
-    uow_factory: UnitOfWorkFactory,
-    get_current_week_schedule_for_group: GetCurrentWeekScheduleForGroupUseCase,
-    get_next_week_schedule_for_group: GetNextWeekScheduleForGroupUseCase,
-    get_schedule_for_today_for_group: GetScheduleForTodayForGroupUseCase,
-    get_schedule_for_tomorrow_for_group: GetScheduleForTomorrowForGroupUseCase,
-) -> AsyncTeleBot:
+def create_bot(token: str, ) -> AsyncTeleBot:
+
     bot = AsyncTeleBot(token)
 
     register_commands_handlers(bot=bot)
     register_common_handlers(bot=bot)
-    register_main_menu_message_handlers(
-        bot=bot,
-        uow_factory=uow_factory,
-        get_schedule_for_today_for_group=get_schedule_for_today_for_group,
-        get_schedule_for_tomorrow_for_group=get_schedule_for_tomorrow_for_group,
-    )
-    register_schedule_menu_message_handlers(
-        bot=bot,
-        uow_factory=uow_factory,
-        get_current_week_schedule_for_group=get_current_week_schedule_for_group,
-        get_next_week_schedule_for_group=get_next_week_schedule_for_group,
+
+    bot.register_message_handler(
+        main_menu.show_schedule_for_today_menu,
+        regexp=MainMenuButtons.SCHEDULE_FOR_TODAY,
+        pass_bot=True,
     )
 
     return bot
