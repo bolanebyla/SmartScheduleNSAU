@@ -96,6 +96,8 @@ container.config.from_dict(
     }
 )
 
+container.check_dependencies()
+
 if __name__ == '__main__':
     # TODO: вынести `non_stop` в настройки
     asyncio.run(bot.polling(non_stop=False))
